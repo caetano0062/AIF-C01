@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado AWS Certified AI Practitioner - Foco AIF-C01</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .option-card:hover { border-color: #3b82f6; background-color: #eff6ff; }
+        .selected { border-color: #2563eb !important; background-color: #dbeafe !important; border-width: 2px; }
+        .correct { border-color: #10b981 !important; background-color: #d1fae5 !important; }
+        .incorrect { border-color: #ef4444 !important; background-color: #fee2e2 !important; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const quizData = [
+            {
+                id: 1,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma grande corporação deseja implementar um assistente de IA generativa para seus funcionários de RH. O assistente deve ser capaz de responder perguntas sobre políticas internas armazenadas no SharePoint e arquivos PDF no Amazon S3. É um requisito crítico que o assistente respeite as permissões de acesso (ACLs) de cada funcionário, garantindo que ninguém veja informações de documentos aos quais não tenha acesso original. Qual solução atende a esses requisitos com o menor esforço operacional?",
+                options: [
+                    { id: "A", text: "Usar o Amazon Q Business com conectores nativos para SharePoint e S3, integrado ao AWS IAM Identity Center.", isCorrect: true },
+                    { id: "B", text: "Implementar um modelo no Amazon Bedrock usando Fine-tuning com os dados de RH e políticas de IAM para controle de acesso.", isCorrect: false },
+                    { id: "C", text: "Utilizar o Amazon Q Developer para criar scripts de busca customizados que validam permissões via tabelas do DynamoDB.", isCorrect: false },
+                    { id: "D", text: "Configurar o Amazon Kendra para indexação e usar o Amazon SageMaker para gerar as respostas via inferência em tempo real.", isCorrect: false },
+                    { id: "E", text: "Criar uma aplicação no AWS AppRunner que utilize a API do Claude 3 e filtre os resultados via código após a geração.", isCorrect: false }
+                ],
+                explanation: "O Amazon Q Business foi projetado especificamente para busca e assistência corporativa. Ele possui conectores nativos para SharePoint e S3 que preservam as listas de controle de acesso (ACLs). Ao integrar com o AWS IAM Identity Center, o sistema automaticamente filtra as respostas com base no que o usuário tem permissão para ver. As outras opções exigem desenvolvimento manual complexo (C, E) ou não tratam nativamente de permissões documentais granulares (B, D)."
+            },
+            {
+                id: 2,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma instituição financeira está desenvolvendo uma aplicação de análise de risco que utiliza Foundation Models no Amazon Bedrock. Por conformidade regulatória, os dados não podem trafegar pela internet pública. A aplicação está hospedada em instâncias Amazon EC2 em uma Subnet Privada. Qual configuração de rede é necessária para permitir a comunicação segura e privada com o Amazon Bedrock?",
+                options: [
+                    { id: "A", text: "Configurar um Internet Gateway e atribuir IPs públicos às instâncias EC2.", isCorrect: false },
+                    { id: "B", text: "Criar um VPC Gateway Endpoint configurado especificamente para o serviço Amazon Bedrock.", isCorrect: false },
+                    { id: "C", text: "Estabelecer uma conexão AWS Site-to-Site VPN entre a Subnet Privada e o endpoint do Bedrock.", isCorrect: false },
+                    { id: "D", text: "Criar um VPC Interface Endpoint (AWS PrivateLink) para o Amazon Bedrock na VPC da aplicação.", isCorrect: true },
+                    { id: "E", text: "Utilizar um NAT Gateway na Subnet Pública para mascarar o tráfego das instâncias privadas.", isCorrect: false }
+                ],
+                explanation: "Para serviços de IA como Amazon Bedrock ou Amazon SageMaker, a conectividade privada de dentro de uma VPC é feita via Interface Endpoint (alimentado pelo AWS PrivateLink). Isso cria um IP privado dentro da sua rede para acessar o serviço sem sair para a internet. Gateway Endpoints (B) existem apenas para S3 e DynamoDB. NAT Gateway (E) ainda faz o tráfego passar pela internet, o que violaria o requisito de conformidade."
+            },
+            {
+                id: 3,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Um desenvolvedor de software deseja acelerar o processo de modernização de uma aplicação legada em Java, convertendo partes do código para Python e gerando testes unitários automatizados. Qual serviço AWS fornece um assistente especializado diretamente na IDE (como VS Code) para esta tarefa?",
+                options: [
+                    { id: "A", text: "Amazon Q Business", isCorrect: false },
+                    { id: "B", text: "Amazon Q Developer", isCorrect: true },
+                    { id: "C", text: "Amazon Bedrock Studio", isCorrect: false },
+                    { id: "D", text: "Amazon SageMaker Canvas", isCorrect: false },
+                    { id: "E", text: "AWS CodePipeline com integração de IA", isCorrect: false }
+                ],
+                explanation: "O Amazon Q Developer (antigo CodeWhisperer evoluído) é focado especificamente no ciclo de vida de desenvolvimento. Ele oferece suporte a conversão de código, geração de testes e correções de segurança dentro da IDE. O Amazon Q Business (A) é para usuários de negócios e dados corporativos, não para desenvolvimento de código."
+            },
+            {
+                id: 4,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Durante a auditoria de um sistema de IA de concessão de crédito, descobriu-se que o modelo estava negando pedidos injustificadamente para um grupo demográfico específico, mesmo que a renda fosse compatível. Qual conceito de IA Responsável descreve esse fenômeno e qual ferramenta AWS ajuda a detectá-lo?",
+                options: [
+                    { id: "A", text: "Alucinação; detectada pelo Amazon Bedrock Guardrails.", isCorrect: false },
+                    { id: "B", text: "Vies (Bias); detectado pelo Amazon SageMaker Clarify.", isCorrect: true },
+                    { id: "C", text: "Toxicidade; detectada pelo Amazon Comprehend.", isCorrect: false },
+                    { id: "D", text: "Contaminação de Dados; detectada pelo AWS Glue DataBrew.", isCorrect: false },
+                    { id: "E", text: "Opacidade; detectada pelo Amazon CloudWatch Logs.", isCorrect: false }
+                ],
+                explanation: "O tratamento diferenciado ou injusto de grupos é chamado de Viés (Bias). O Amazon SageMaker Clarify é a ferramenta específica da AWS para detectar desequilíbrios nos dados de treinamento e métricas de viés no modelo treinado. Guardrails (A) servem para filtrar conteúdo em tempo real em modelos generativos, não para detectar viés estrutural em modelos de crédito."
+            },
+            {
+                id: 5,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Ao configurar um modelo de linguagem (LLM) no Amazon Bedrock para gerar respostas criativas em uma campanha de marketing, um arquiteto deseja aumentar a diversidade das palavras escolhidas e permitir respostas menos previsíveis. Quais parâmetros de inferência devem ser ajustados?",
+                options: [
+                    { id: "A", text: "Diminuir a Temperatura e aumentar o Top P.", isCorrect: false },
+                    { id: "B", text: "Aumentar a Temperatura e aumentar o Top P.", isCorrect: true },
+                    { id: "C", text: "Aumentar o número máximo de tokens e diminuir a Temperatura.", isCorrect: false },
+                    { id: "D", text: "Desativar o Guardrail e aumentar o Top K.", isCorrect: false },
+                    { id: "E", text: "Diminuir a Temperatura e diminuir o Top K.", isCorrect: false }
+                ],
+                explanation: "Temperatura e Top P controlam a aleatoriedade. Aumentar a Temperatura torna a distribuição de probabilidade das palavras mais 'plana', permitindo escolhas menos prováveis (mais criativas). Aumentar o Top P (Nucleus Sampling) expande o conjunto de palavras candidatas consideradas para a escolha. Para respostas criativas, ambos devem ser elevados."
+            },
+            {
+                id: 6,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Para garantir a governança em uma plataforma que utiliza Amazon Bedrock, uma empresa deseja registrar todas as entradas (prompts) e saídas (respostas) para fins de auditoria interna, garantindo que esses logs sejam criptografados com uma chave gerenciada pela própria empresa. Qual combinação de serviços deve ser usada?",
+                options: [
+                    { id: "A", text: "Amazon S3, AWS CloudTrail e chaves gerenciadas pelo AWS KMS.", isCorrect: true },
+                    { id: "B", text: "Amazon CloudWatch e AWS Secrets Manager.", isCorrect: false },
+                    { id: "C", text: "VPC Flow Logs e Amazon Inspector.", isCorrect: false },
+                    { id: "D", text: "Amazon Bedrock Guardrails e IAM Roles.", isCorrect: false },
+                    { id: "E", text: "AWS Config e Amazon Macie.", isCorrect: false }
+                ],
+                explanation: "O Amazon Bedrock permite exportar logs de invocação para o Amazon S3 ou CloudWatch Logs. Para auditoria de governança completa (quem chamou o quê), o CloudTrail registra a atividade da API. A criptografia personalizada é fornecida pelo AWS KMS (Key Management Service). O Secrets Manager (B) é para senhas, e Macie (E) é para descoberta de dados sensíveis, não logs de auditoria."
+            },
+            {
+                id: 7,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa precisa de uma solução de IA que possa analisar milhares de feedbacks de clientes e identificar o sentimento dominante, extrair palavras-chave e identificar entidades (nomes de produtos). Eles preferem não gerenciar infraestrutura ou treinar modelos próprios. Qual serviço é o mais adequado?",
+                options: [
+                    { id: "A", text: "Amazon SageMaker Ground Truth", isCorrect: false },
+                    { id: "B", text: "Amazon Rekognition", isCorrect: false },
+                    { id: "C", text: "Amazon Comprehend", isCorrect: true },
+                    { id: "D", text: "Amazon Transcribe", isCorrect: false },
+                    { id: "E", text: "Amazon Polly", isCorrect: false }
+                ],
+                explanation: "O Amazon Comprehend é um serviço de Processamento de Linguagem Natural (NLP) pré-treinado que realiza análise de sentimento, extração de entidades e palavras-chave sem necessidade de gerenciar modelos ou infraestrutura. Rekognition (B) é para imagem/vídeo, Transcribe (D) é áudio para texto."
+            },
+            {
+                id: 8,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "No modelo de Responsabilidade Compartilhada da AWS para serviços de IA Generativa (como o Amazon Bedrock), qual das seguintes é uma responsabilidade EXCLUSIVA do cliente?",
+                options: [
+                    { id: "A", text: "Gerenciar a segurança física dos data centers que hospedam os aceleradores de hardware.", isCorrect: false },
+                    { id: "B", text: "Atualizar o software do sistema operacional dos servidores de inferência.", isCorrect: false },
+                    { id: "C", text: "Proteger os dados de treinamento e os prompts enviados ao modelo.", isCorrect: true },
+                    { id: "D", text: "Isolar o tráfego de rede entre diferentes locatários (tenants) no nível do hipervisor.", isCorrect: false },
+                    { id: "E", text: "Garantir a integridade do código-fonte dos Foundation Models fornecidos pela AWS.", isCorrect: false }
+                ],
+                explanation: "No modelo de responsabilidade compartilhada, a AWS cuida da 'Segurança DA Nuvem' (infraestrutura, isolamento, hardware). O cliente cuida da 'Segurança NA Nuvem', o que inclui a proteção dos dados que ele insere no serviço, as configurações de IAM e como ele utiliza os outputs do modelo."
+            },
+            {
+                id: 9,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma startup quer criar um chatbot de suporte técnico que responda com base nos manuais de produtos mais recentes, que mudam semanalmente. Eles querem evitar o custo e a complexidade de retreinar o modelo constantemente. Qual padrão arquitetural é o mais recomendado?",
+                options: [
+                    { id: "A", text: "Fine-tuning semanal do modelo.", isCorrect: false },
+                    { id: "B", text: "Uso de Few-shot prompting com 100 exemplos no prompt.", isCorrect: false },
+                    { id: "C", text: "Retrieval-Augmented Generation (RAG) usando Amazon Bedrock Knowledge Bases.", isCorrect: true },
+                    { id: "D", text: "Mudança para um modelo menor que requer menos dados.", isCorrect: false },
+                    { id: "E", text: "Utilizar instâncias Spot do EC2 para reduzir o custo do retreinamento.", isCorrect: false }
+                ],
+                explanation: "O RAG (Retrieval-Augmented Generation) permite que o modelo consulte uma base de dados externa (como Knowledge Bases for Amazon Bedrock) no momento da pergunta. Isso é ideal para dados voláteis (manuais semanais), pois basta atualizar a base de conhecimento (S3/Vetor) sem precisar retreinar ou fazer fine-tuning no modelo."
+            },
+            {
+                id: 10,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Qual técnica de aprendizado de máquina seria usada para agrupar automaticamente clientes em diferentes segmentos de mercado com base em comportamentos de compra semelhantes, sem que o algoritmo receba rótulos prévios de categorias?",
+                options: [
+                    { id: "A", text: "Aprendizado Supervisionado (Classificação)", isCorrect: false },
+                    { id: "B", text: "Aprendizado Supervisionado (Regressão)", isCorrect: false },
+                    { id: "C", text: "Aprendizado Não Supervisionado (Clustering)", isCorrect: true },
+                    { id: "D", text: "Aprendizado por Reforço", isCorrect: false },
+                    { id: "E", text: "Deep Learning Supervisionado", isCorrect: false }
+                ],
+                explanation: "Quando não há rótulos (labels) e o objetivo é encontrar padrões ou grupos naturais nos dados, usamos o Aprendizado Não Supervisionado, especificamente a técnica de Clustering (Agrupamento). Classificação (A) exigiria saber as categorias de antemão."
+            }
+        ];
+
+        function App() {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [showResult, setShowResult] = useState(false);
+            const [score, setScore] = useState(0);
+            const [answers, setAnswers] = useState(Array(quizData.length).fill(null));
+            const [quizFinished, setQuizFinished] = useState(false);
+
+            const handleOptionSelect = (optionId) => {
+                if (quizFinished) return;
+                const newAnswers = [...answers];
+                newAnswers[currentQuestion] = optionId;
+                setAnswers(newAnswers);
+                setSelectedOption(optionId);
+            };
+
+            const nextQuestion = () => {
+                if (currentQuestion < quizData.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedOption(answers[currentQuestion + 1]);
+                    setShowResult(false);
+                } else {
+                    calculateScore();
+                }
+            };
+
+            const prevQuestion = () => {
+                if (currentQuestion > 0) {
+                    setCurrentQuestion(currentQuestion - 1);
+                    setSelectedOption(answers[currentQuestion - 1]);
+                    setShowResult(false);
+                }
+            };
+
+            const calculateScore = () => {
+                let finalScore = 0;
+                answers.forEach((ans, index) => {
+                    if (ans === quizData[index].options.find(o => o.isCorrect).id) {
+                        finalScore++;
+                    }
+                });
+                setScore(finalScore);
+                setQuizFinished(true);
+            };
+
+            const toggleResult = () => setShowResult(!showResult);
+
+            const q = quizData[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+
+            if (quizFinished) {
+                const percentage = (score / quizData.length) * 100;
+                const passed = percentage >= 70;
+
+                return (
+                    <div className="max-w-3xl mx-auto my-10 p-8 bg-white rounded-xl shadow-lg text-center">
+                        <h1 className="text-3xl font-bold mb-4 text-gray-800">Resultado do Simulado</h1>
+                        <div className={`text-6xl font-bold mb-4 ${passed ? 'text-green-500' : 'text-red-500'}`}>
+                            {Math.round(percentage * 10)}
+                        </div>
+                        <p className="text-xl mb-6">
+                            Você acertou {score} de {quizData.length} questões.
+                        </p>
+                        <div className={`p-4 rounded-lg mb-8 ${passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {passed ? 
+                                "Parabéns! Você atingiu a pontuação de aprovação (700+)." : 
+                                "Continue estudando. Você ainda está abaixo dos 700 pontos necessários."}
+                        </div>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition"
+                        >
+                            Tentar Novamente
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="max-w-4xl mx-auto my-10 p-6">
+                    <header className="mb-8">
+                        <h1 className="text-2xl font-bold text-gray-800 border-b-2 border-orange-500 inline-block pb-1 mb-2">
+                            Simulado AWS AIF-C01 <span className="text-gray-400 text-sm ml-2 font-normal">| Foco em Domínios 3 e 5</span>
+                        </h1>
+                        <div className="w-full bg-gray-200 h-2 rounded-full mt-4">
+                            <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Questão {currentQuestion + 1} de {quizData.length}</span>
+                            <span>{Math.round(progress)}% Concluído</span>
+                        </div>
+                    </header>
+
+                    <main className="bg-white p-8 rounded-xl shadow-md">
+                        <div className="mb-4">
+                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold uppercase">
+                                {q.domain}
+                            </span>
+                        </div>
+                        
+                        <h2 className="text-xl font-semibold text-gray-800 mb-6 leading-relaxed">
+                            {q.question}
+                        </h2>
+
+                        <div className="space-y-3 mb-8">
+                            {q.options.map((opt) => {
+                                let statusClass = "";
+                                if (showResult) {
+                                    if (opt.isCorrect) statusClass = "correct";
+                                    else if (selectedOption === opt.id) statusClass = "incorrect";
+                                } else if (selectedOption === opt.id) {
+                                    statusClass = "selected";
+                                }
+
+                                return (
+                                    <div 
+                                        key={opt.id}
+                                        onClick={() => handleOptionSelect(opt.id)}
+                                        className={`option-card p-4 border rounded-lg cursor-pointer transition-all flex items-start ${statusClass}`}
+                                    >
+                                        <span className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 mt-0.5 text-sm font-bold shrink-0
+                                            ${selectedOption === opt.id ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 text-gray-500'}`}>
+                                            {opt.id}
+                                        </span>
+                                        <p className="text-gray-700">{opt.text}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {showResult && (
+                            <div className="mb-8 p-5 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg">
+                                <h3 className="font-bold text-blue-800 mb-2 flex items-center">
+                                    <i className="fas fa-info-circle mr-2"></i> Explicação Detalhada
+                                </h3>
+                                <p className="text-gray-600 text-sm leading-relaxed italic">
+                                    {q.explanation}
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center border-t pt-6">
+                            <button 
+                                onClick={prevQuestion}
+                                disabled={currentQuestion === 0}
+                                className="text-gray-600 hover:text-blue-600 disabled:opacity-30 flex items-center font-medium"
+                            >
+                                <i className="fas fa-chevron-left mr-2"></i> Anterior
+                            </button>
+                            
+                            <button 
+                                onClick={toggleResult}
+                                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition font-medium"
+                            >
+                                {showResult ? "Esconder Explicação" : "Ver Gabarito"}
+                            </button>
+
+                            <button 
+                                onClick={nextQuestion}
+                                disabled={!selectedOption}
+                                className="bg-orange-500 text-white px-8 py-2 rounded-lg hover:bg-orange-600 transition disabled:opacity-50 font-bold"
+                            >
+                                {currentQuestion === quizData.length - 1 ? "Finalizar" : "Próxima"} <i className="fas fa-chevron-right ml-2"></i>
+                            </button>
+                        </div>
+                    </main>
+                    
+                    <footer className="mt-8 text-center text-gray-400 text-xs">
+                        Prepare-se para o dia 15. Foco em Amazon Q, VPC Endpoints e Responsabilidade Compartilhada.
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

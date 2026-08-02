@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado AWS Certified AI Practitioner (AIF-C01) - 65 Questões Oficial</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for React JSX parsing -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .option-hover:hover { border-color: #3b82f6; background-color: #f0f9ff; }
+        .selected-option { border-color: #2563eb !important; background-color: #eff6ff !important; border-width: 2px !important; }
+        .correct-option { border-color: #10b981 !important; background-color: #ecfdf5 !important; border-width: 2px !important; }
+        .incorrect-option { border-color: #ef4444 !important; background-color: #fef2f2 !important; border-width: 2px !important; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // Dataset completo de 65 questões inéditas e oficiais AIF-C01
+        const questionsData = [
+            // --- DOMÍNIO 3 & 5 FOCUS: AMAZON Q & VPC REDES ---
+            {
+                id: 1,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                subtopic: "Amazon Q Business & Controle de Acesso Corporativo",
+                question: "Uma empresa multinacional deseja implementar um assistente virtual corporativo baseado em IA Generativa para responder dúvidas de funcionários sobre políticas de RH e documentos estratégicos hospedados no SharePoint e Amazon S3. A empresa exige estritamente que os funcionários visualizem apenas trechos de documentos aos quais possuem permissão explícita de leitura no Active Directory/SharePoint. Qual arquitetura atende a estes requisitos com o menor esforço operacional e sem necessidade de desenvolvimento customizado de segurança?",
+                options: [
+                    { id: "A", text: "Implantar um modelo Claude 3 Sonnet no Amazon Bedrock, criar embeddings e salvar no Amazon OpenSearch Serverless, aplicando regras de filtro de segurança via AWS Lambda após a recuperação." },
+                    { id: "B", text: "Configurar o Amazon Q Business com conectores nativos para SharePoint e Amazon S3, integrando a aplicação ao AWS IAM Identity Center para sincronização e validação das ACLs (Listas de Controle de Acesso) do usuário." },
+                    { id: "C", text: "Utilizar o Amazon Q Developer no console da AWS para indexar os arquivos do S3 e criar rotinas em Python que validam os tokens JWT antes de exibir a resposta." },
+                    { id: "D", text: "Configurar uma base de conhecimento no Amazon Bedrock Knowledge Bases utilizando Amazon Aurora PostgreSQL com pgvector e implementar Fine-Tuning no modelo para memorizar as permissões." },
+                    { id: "E", text: "Instalar o Amazon Kendra e conectar a um modelo hospedado no SageMaker JumpStart através de uma API Gateway que executa filtragem de autorização via Amazon Cognito." }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Q Business é um assistente conversacional corporativo pronto para uso que integra nativamente com mais de 40 fontes de dados (incluindo SharePoint, S3, Salesforce e Confluence). Ele respeita e aplica automaticamente as Listas de Controle de Acesso (ACLs) do usuário ao ser integrado com o AWS IAM Identity Center. Nenhuma das outras alternativas oferece esse controle de permissões nativo no nível do documento sem código customizado."
+            },
+            {
+                id: 2,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma instituição financeira exige que a sua aplicação de análise de risco, hospedada em instâncias Amazon EC2 dentro de uma Subnet Privada, comunique-se com o serviço Amazon Bedrock para inferência de modelos. Por exigências regulatórias rigorosas, nenhum tráfego pode passar pela internet pública ou utilizar NAT Gateways. Qual solução de rede atende plenamente a essa exigência de segurança?",
+                options: [
+                    { id: "A", text: "Criar um Internet Gateway na VPC e associar um Elastic IP à instância EC2 para criptografar o tráfego via SSL/TLS." },
+                    { id: "B", text: "Criar um VPC Gateway Endpoint configurado para o Amazon Bedrock na tabela de rotas da Subnet Privada." },
+                    { id: "C", text: "Criar um VPC Interface Endpoint (alimentado pelo AWS PrivateLink) para o Amazon Bedrock dentro da VPC e direcionar as chamadas de API para o endereço IP privado do endpoint." },
+                    { id: "D", text: "Configurar um AWS Direct Connect dedicado ligando o data center on-premises diretamente ao endpoint público do Amazon Bedrock." },
+                    { id: "E", text: "Implementar um NAT Gateway na Subnet Pública e configurar uma VPN AWS Site-to-Site entre a Subnet Privada e o NAT Gateway." }
+                ],
+                correctOption: "C",
+                explanation: "O VPC Interface Endpoint (alimentado pelo AWS PrivateLink) aloca interfaces de rede virtuais (ENIs) com IPs privados dentro da sua Subnet Privada para se comunicar com o Amazon Bedrock. Todo o tráfego permanece dentro da rede privada da AWS sem transitar pela internet. B está errada porque Gateway Endpoints existem APENAS para Amazon S3 e DynamoDB. A, D e E envolvem tráfego público ou arquiteturas incorretas."
+            },
+            {
+                id: 3,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Um time de engenharia de software precisa acelerar a migração de microsserviços legados de Java 8 para Java 17 e gerar testes unitários automatizados diretamente na IDE Visual Studio Code dos desenvolvedores. Qual serviço AWS foi projetado especificamente para essa finalidade de assistência ao ciclo de vida de desenvolvimento de software?",
+                options: [
+                    { id: "A", text: "Amazon Q Business" },
+                    { id: "B", text: "Amazon Q Developer" },
+                    { id: "C", text: "Amazon CodePipeline AI Agent" },
+                    { id: "D", text: "Amazon Bedrock Studio" },
+                    { id: "E", text: "Amazon SageMaker Canvas" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Q Developer (evoluído do antigo Amazon CodeWhisperer) é o assistente generativo focado em desenvolvimento de software. Ele fornece autocompletar de código, geração de testes unitários, explicação de código, verificação de vulnerabilidades e transformação/migração automatizada de código (ex: Java 8 para 17) na IDE e CLI."
+            },
+            {
+                id: 4,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Para auditoria contínua de compliance, uma empresa precisa armazenar todos os logs de invocação de modelos no Amazon Bedrock (incluindo o texto dos prompts digitados e as respostas geradas pelos FMs). Esses logs devem ser armazenados de forma imutável em um bucket S3 e criptografados usando uma chave gerenciada pelo próprio cliente (KMS CMK). Qual configuração cumpre esses requisitos?",
+                options: [
+                    { id: "A", text: "Ativar as configurações de Logging de Invocação no Amazon Bedrock, definindo como destino um bucket Amazon S3 configurado com criptografia AWS KMS (SSE-KMS) utilizando uma Customer Managed Key." },
+                    { id: "B", text: "Habilitar o VPC Flow Logs na VPC da aplicação e enviar os payloads HTTP para o AWS Secrets Manager." },
+                    { id: "C", text: "Configurar o AWS CloudTrail para capturar apenas eventos de gerenciamento de nível de controle e salvar no CloudWatch Logs sem chave KMS." },
+                    { id: "D", text: "Ativar o Amazon GuardDuty para registrar o conteúdo das requisições POST do Bedrock e criptografar com SSE-S3." },
+                    { id: "E", text: "Usar o Amazon Bedrock Guardrails para exportar arquivos CSV automaticamente para o AWS Artifact." }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Bedrock possui um recurso nativo chamado Model Invocation Logging. Quando ativado, ele permite enviar prompts, dados de áudio/imagem e respostas diretamente para um bucket Amazon S3 ou grupo do CloudWatch Logs. Para criptografia personalizada com chave própria, utiliza-se SSE-KMS com uma Customer Managed Key (CMK)."
+            },
+            {
+                id: 5,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma startup precisa criar um assistente de suporte ao cliente para responder perguntas baseadas nos manuais técnicos de produtos que mudam semanalmente. A equipe quer garantir que o assistente forneça citações exatas da fonte e não sofra com alucinações, evitando custos e a lentidão de retreinar o modelo a cada alteração documental. Qual padrão arquitetural é o mais recomendado?",
+                options: [
+                    { id: "A", text: "Fine-tuning diário de um Foundation Model no Amazon Bedrock." },
+                    { id: "B", text: "Continued Pre-training de um modelo Llama 3 no Amazon SageMaker." },
+                    { id: "C", text: "Retrieval-Augmented Generation (RAG) utilizando o Amazon Bedrock Knowledge Bases integrado a uma base vetorial no Amazon S3/OpenSearch." },
+                    { id: "D", text: "Aumentar o tamanho do contexto do prompt utilizando poucas passagens estáticas em Few-Shot Prompting sem banco de dados." },
+                    { id: "E", text: "Utilizar o Amazon Transcribe para converter os manuais em áudio e enviar diretamente para o Bedrock." }
+                ],
+                correctOption: "C",
+                explanation: "A arquitetura RAG (Retrieval-Augmented Generation) é o padrão ideal quando o conhecimento da aplicação muda com frequência ou exige citação de fontes atualizadas. No Amazon Bedrock Knowledge Bases, os documentos no S3 são automaticamente convertidos em embeddings vetoriais e consultados no momento do prompt, eliminando o custo e tempo de retreinamento do modelo."
+            },
+            {
+                id: 6,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "De acordo com o Modelo de Responsabilidade Compartilhada da AWS especificamente para serviços gerenciados de IA Generativa como o Amazon Bedrock, qual é uma responsabilidade EXCLUSIVA da AWS?",
+                options: [
+                    { id: "A", text: "A proteção de dados sensíveis e PII contidos nos prompts de entrada enviados pela aplicação." },
+                    { id: "B", text: "A configuração de permissões de acesso do usuário via políticas IAM e papéis de execução." },
+                    { id: "C", text: "A segurança física, manutenção dos servidores, hipervisores e isolamento de infraestrutura onde os Foundation Models residem." },
+                    { id: "D", text: "A validação do conteúdo gerado pelo modelo antes de exibi-lo ao consumidor final." },
+                    { id: "E", text: "A definição do limite de tokens de saída e ajuste de temperatura nos hiperparâmetros." }
+                ],
+                correctOption: "C",
+                explanation: "No modelo de responsabilidade compartilhada para serviços gerenciados (como Bedrock), a AWS é responsável pela segurança 'DA' nuvem — incluindo infraestrutura física dos data centers, hardware de aceleração (GPUs/Trainium), atualização do SO subjacente e isolamento multitenant. O cliente é responsável pela segurança 'NA' nuvem (dados, prompts, IAM, criptografia de dados e uso seguro das saídas)."
+            },
+            {
+                id: 7,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Durante a execução de um prompt no Amazon Bedrock para criação de slogans publicitários e histórias criativas, o desenvolvedor nota que as respostas estão repetitivas e excessivamente determinísticas. Quais ajustes nos parâmetros de inferência aumentarão a diversidade e criatividade do texto gerado?",
+                options: [
+                    { id: "A", text: "Diminuir a Temperatura e diminuir o valor do Top P." },
+                    { id: "B", text: "Aumentar a Temperatura e aumentar o valor do Top P." },
+                    { id: "C", text: "Reduzir o Max Token Length e habilitar as Stop Sequences." },
+                    { id: "D", text: "Aumentar a Temperatura e reduzir o Top K para 1." },
+                    { id: "E", text: "Ativar o Bedrock Guardrails no modo estrito." }
+                ],
+                correctOption: "B",
+                explanation: "A Temperatura e o Top P (Nucleus Sampling) controlam a aleatoriedade da amostragem de palavras. Aumentar a Temperatura 'achata' a distribuição de probabilidade das próximas palavras, permitindo escolhas menos óbvias. Aumentar o Top P faz o modelo considerar uma fatia cumulativa maior de palavras prováveis. Ambos aumentam a variação e criatividade das respostas."
+            },
+            {
+                id: 8,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Uma instituição de crédito utiliza um modelo de Machine Learning no Amazon SageMaker para aprovação automatizada de empréstimos. Uma auditoria interna suspeita que o modelo está apresentando resultados desfavoráveis desproporcionais para solicitantes idosos. Qual ferramenta da AWS deve ser utilizada para analisar os dados de treinamento e a performance do modelo em busca de vieses (bias) e explicar a importância das variáveis na decisão?",
+                options: [
+                    { id: "A", text: "Amazon Bedrock Guardrails" },
+                    { id: "B", text: "Amazon SageMaker Clarify" },
+                    { id: "C", text: "Amazon Comprehend Medical" },
+                    { id: "D", text: "AWS Glue DataBrew" },
+                    { id: "E", text: "Amazon Inspector AI" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon SageMaker Clarify é a ferramenta específica da AWS para detectar viés (bias) em dados de treinamento e modelos treinados, além de fornecer explicabilidade de modelos de Machine Learning utilizando valores SHAP (Shapley Additive exPlanations) para indicar como cada variável afetou a decisão final."
+            },
+            {
+                id: 9,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Uma empresa de e-commerce possui uma base histórica com milhões de transações de compras rotuladas como 'Fraude' ou 'Legítima'. Eles desejam treinar um modelo para prever se novas compras em tempo real são fraudulentas. Qual categoria de Machine Learning e tipo de tarefa descreve essa necessidade?",
+                options: [
+                    { id: "A", text: "Aprendizado Não Supervisionado / Clustering" },
+                    { id: "B", text: "Aprendizado Supervisionado / Classificação" },
+                    { id: "C", text: "Aprendizado Supervisionado / Regressão" },
+                    { id: "D", text: "Aprendizado por Reforço / Q-Learning" },
+                    { id: "E", text: "IA Generativa / Variational Autoencoder" }
+                ],
+                correctOption: "B",
+                explanation: "Dado que o conjunto de dados possui rótulos prévios históricos ('Fraude' vs 'Legítima') e a meta é categorizar a entrada em classes discretas, trata-se de Aprendizado Supervisionado na modalidade de Classificação (Binária). Regressão preveria valores numéricos contínuos (ex: preço de uma casa)."
+            },
+            {
+                id: 10,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa precisa armazenar centenas de milhares de imagens médicas e dados de prontuários em um bucket Amazon S3 para treinamento de modelos no SageMaker. Para atender às regras de privacidade (LGPD/HIPAA), a equipe precisa identificar e mascarar automaticamente Nomes, CPFs, Endereços e Números de Telefone (PII) presentes nos dados antes do treinamento. Qual serviço AWS realiza essa varredura automática de PII no S3?",
+                options: [
+                    { id: "A", text: "AWS Shield Advanced" },
+                    { id: "B", text: "Amazon Macie" },
+                    { id: "C", text: "AWS WAF" },
+                    { id: "D", text: "Amazon GuardDuty" },
+                    { id: "E", text: "AWS Security Hub" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Macie é um serviço totalmente gerenciado de segurança de dados e privacidade que utiliza aprendizado de máquina e padrão de correspondência para descobrir, monitorar e proteger Informações Pessoais Identificáveis (PII) e dados sensíveis armazenados no Amazon S3."
+            },
+            {
+                id: 11,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa precisa conectar instâncias do Amazon EC2 em uma Subnet Privada com o Amazon S3 para carregar dados de treinamento de IA sem custos de tráfego de dados e sem passar por um NAT Gateway ou Internet pública. Qual componente de VPC deve ser adicionado à Tabela de Rotas?",
+                options: [
+                    { id: "A", text: "VPC Interface Endpoint (AWS PrivateLink)" },
+                    { id: "B", text: "VPC Gateway Endpoint" },
+                    { id: "C", text: "AWS Transit Gateway" },
+                    { id: "D", text: "Egress-Only Internet Gateway" },
+                    { id: "E", text: "Virtual Private Gateway" }
+                ],
+                correctOption: "B",
+                explanation: "O VPC Gateway Endpoint é o recurso gratuito da VPC projetado especificamente para conectar recursos de Subnets Privadas diretamente ao Amazon S3 e ao Amazon DynamoDB através da tabela de rotas interna, sem precisar de NAT Gateway ou internet pública."
+            },
+            {
+                id: 12,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Um arquiteto de soluções está comparando o Amazon Q Business com o Amazon Kendra para uma iniciativa de busca interna. Qual é a principal diferença conceitual entre o Amazon Q Business e o Amazon Kendra?",
+                options: [
+                    { id: "A", text: "O Amazon Q Business é um mecanismo de busca por palavra-chave tradicional, enquanto o Kendra é um gerador de imagens." },
+                    { id: "B", text: "O Amazon Kendra é um serviço de busca inteligente/vetorial indexada que retorna trechos de documentos relevantes, enquanto o Amazon Q Business é um assistente conversacional de IA Generativa completo que sintetiza respostas e executa ações corporativas." },
+                    { id: "C", text: "O Amazon Q Business funciona apenas em ambientes on-premises, enquanto o Amazon Kendra só funciona na nuvem AWS." },
+                    { id: "D", text: "O Amazon Kendra exige o desenvolvimento de LLMs do zero, enquanto o Amazon Q Business não pode se conectar ao Amazon S3." },
+                    { id: "E", text: "Não há diferença; Amazon Q Business é apenas o novo nome de marketing do Amazon Kendra sem alterações de recursos." }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Kendra é um mecanismo de pesquisa corporativa alimentado por ML que localiza e ranqueia trechos de documentos e FAQs. O Amazon Q Business vai muito além: ele utiliza a inteligência do Kendra para recuperar dados (RAG), mas usa LLMs para resumir, redigir textos, sintetizar respostas em linguagem natural, responder perguntas e executar ações via plugins de negócios."
+            },
+            {
+                id: 13,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Para evitar que usuários mal-intencionados realizem ataques de 'Prompt Injection' ou solicitem instruções para criar malware no assistente de IA da empresa, a equipe de segurança quer aplicar filtros em tempo real que bloqueiem tópicos proibidos, linguagem tóxica e mascaramento automático de PII nas entradas e saídas do Amazon Bedrock. Qual recurso nativo do Bedrock resolve essa necessidade?",
+                options: [
+                    { id: "A", text: "AWS WAF Web ACLs" },
+                    { id: "B", text: "Amazon Bedrock Guardrails" },
+                    { id: "C", text: "Amazon Inspector for GenAI" },
+                    { id: "D", text: "Amazon CloudWatch Anomaly Detection" },
+                    { id: "E", text: "AWS Network Firewall" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Bedrock Guardrails permite implementar proteções customizadas de IA Responsável para seus modelos no Bedrock. Ele permite filtrar tópicos negados (Denied Topics), bloquear conteúdos nocivos/tóxicos, aplicar filtros de alucinação (Contextual Grounding Check) e mascarar/bloquear PII em tempo real em prompts e respostas."
+            },
+            {
+                id: 14,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Qual técnica de engenharia de prompt consiste em fornecer no texto do prompt alguns exemplos claros de 'Entrada -> Saída esperada' antes de pedir ao modelo que resolva o problema principal?",
+                options: [
+                    { id: "A", text: "Zero-Shot Prompting" },
+                    { id: "B", text: "Few-Shot Prompting" },
+                    { id: "C", text: "Chain-of-Thought (CoT) Prompting" },
+                    { id: "D", text: "ReAct (Reasoning and Acting)" },
+                    { id: "E", text: "Retrieval Augmented Prompting" }
+                ],
+                correctOption: "B",
+                explanation: "Few-Shot Prompting é a prática de incluir alguns exemplos (demonstrações) dentro do próprio contexto do prompt para guiar o formato, estilo e raciocínio do modelo de linguagem. Zero-Shot é quando nenhuma demonstração é fornecida."
+            },
+            {
+                id: 15,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa precisa controlar o acesso de diferentes equipes a modelos específicos no Amazon Bedrock. A equipe de Finanças pode acessar apenas o Anthropic Claude 3 Haiku, enquanto a equipe de Pesquisa pode acessar o Claude 3 Opus. Como essa restrição granular de permissões deve ser implementada?",
+                options: [
+                    { id: "A", text: "Criando políticas do IAM (IAM Policies) atribuídas aos papéis/usuários, especificando o ARN dos modelos de base no elemento 'Resource' da declaração Allow/Deny." },
+                    { id: "B", text: "Configurando regras no Security Group da VPC para bloquear a porta de entrada dos modelos." },
+                    { id: "C", text: "Utilizando chaves KMS diferentes para cada modelo no Bedrock." },
+                    { id: "D", text: "Criando diferentes VPCs para cada equipe e usando VPC Peering." },
+                    { id: "E", text: "Alterando a temperatura dos modelos no console do Amazon Bedrock." }
+                ],
+                correctOption: "A",
+                explanation: "O controle de acesso no nível da API do Amazon Bedrock é gerenciado pelo AWS IAM. Cada modelo no Bedrock possui um Amazon Resource Name (ARN) único (ex: `arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku...`). Definindo o ARN específico no campo 'Resource' de uma política IAM, você concede ou restringe o acesso por modelo para cada grupo de usuários."
+            },
+            {
+                id: 16,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Ao treinar um modelo de Regressão Linear no SageMaker para prever preços de imóveis, você observa que o modelo tem performance excelente no conjunto de treinamento (com erro quase zero), mas comete erros gigantescos quando testado em dados novos (conjunto de teste). Como essa condição é denominada e qual a solução recomendada?",
+                options: [
+                    { id: "A", text: "Underfitting (Subajuste); a solução é simplificar o modelo e remover variáveis." },
+                    { id: "B", text: "Overfitting (Sobreajuste); a solução é aplicar técnicas de regularização, coletar mais dados ou reduzir a complexidade do modelo." },
+                    { id: "C", text: "Data Drift; a solução é trocar o SageMaker pelo Amazon Q." },
+                    { id: "D", text: "Alucinação de modelo; a solução é habilitar o Bedrock Guardrails." },
+                    { id: "E", text: "Desbalanceamento de classes; a solução é aplicar Oversampling com SMOTE." }
+                ],
+                correctOption: "B",
+                explanation: "Overfitting ocorre quando o modelo 'memoriza' os ruídos e detalhes específicos do conjunto de treinamento, perdendo a capacidade de generalizar para dados novos não vistos. A solução inclui regularização (L1/L2), redução do número de parâmetros, técnicas de Dropout ou ampliação da base de treinamento."
+            },
+            {
+                id: 17,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "O que é o conceito de 'Embeddings' no contexto de Processamento de Linguagem Natural (NLP) e bancos de dados vetoriais em soluções como o Amazon Bedrock?",
+                options: [
+                    { id: "A", text: "São arquivos compactados em formato .ZIP armazenados no Amazon S3." },
+                    { id: "B", text: "São representações numéricas (vetores de números de alta dimensão) que capturam o significado semântico, contexto e relações entre palavras ou documentos." },
+                    { id: "C", text: "São imagens geradas pelo modelo Amazon Titan Image Generator a partir de descrições textuais." },
+                    { id: "D", text: "São códigos de chave privada utilizados para criptografar o tráfego da VPC via PrivateLink." },
+                    { id: "E", text: "São hiperparâmetros que definem o tamanho máximo da janela de resposta de um modelo." }
+                ],
+                correctOption: "B",
+                explanation: "Embeddings são representações vetoriais matemáticas de dados (texto, áudio, imagens). Em IA Generativa, modelos como o Amazon Titan Text Embeddings convertem textos em vetores numéricos para que sistemas de busca vetorial (RAG) possam calcular a proximidade e similaridade semântica entre uma pergunta e os documentos indexados."
+            },
+            {
+                id: 18,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Um desenvolvedor está criando um bot no Slack para que desenvolvedores possam consultar status de pipelines e solicitar diagnósticos de erros em instâncias EC2 e funções AWS Lambda usando linguagem natural. Qual serviço oferece capacidade de integração conversacional focada em recursos e operações AWS?",
+                options: [
+                    { id: "A", text: "Amazon Q Business" },
+                    { id: "B", text: "Amazon Q Developer (integrado ao AWS Chatbot / CLI / Console)" },
+                    { id: "C", text: "Amazon Rekognition" },
+                    { id: "D", text: "Amazon SageMaker Data Wrangler" },
+                    { id: "E", text: "AWS AppFlow" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Q Developer estende suas capacidades para o gerenciamento de infraestrutura e operações AWS. Ele se integra ao Console AWS, AWS CLI, IDEs e AWS Chatbot (Slack/Teams), permitindo investigar erros de recursos, sugerir comandos CLI e analisar custos operacionais da conta AWS."
+            },
+            {
+                id: 19,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Qual o recurso da AWS que permite criar registros estruturados detalhando a origem dos dados de treinamento, o objetivo pretendido, as métricas de avaliação, os limites de segurança e os detalhes de governança de um modelo de ML customizado criado no SageMaker?",
+                options: [
+                    { id: "A", text: "Amazon SageMaker Model Cards" },
+                    { id: "B", text: "AWS CloudTrail Event History" },
+                    { id: "C", text: "Amazon Bedrock Agent Alias" },
+                    { id: "D", text: "Amazon Macie Data Profile" },
+                    { id: "E", text: "AWS Config Rules" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon SageMaker Model Cards é o recurso de governança de IA projetado para criar e documentar de forma padronizada os detalhes de um modelo de aprendizado de máquina (propósito, dados de treino, métricas de avaliação, considerações éticas e auditoria de riscos) ao longo de todo o seu ciclo de vida."
+            },
+            {
+                id: 20,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa quer criar um agente autônomo que possa receber uma solicitação de cliente como 'Cancele minha reserva de hotel #1234 e envie uma confirmação por e-mail', orquestrando automaticamente chamadas para APIs de sistemas legados e funções AWS Lambda. Qual serviço/recurso nativo gerencia essa orquestração de tarefas complexas?",
+                options: [
+                    { id: "A", text: "Amazon Bedrock Agents" },
+                    { id: "B", text: "Amazon Lex V1" },
+                    { id: "C", text: "Amazon SageMaker Batch Transform" },
+                    { id: "D", text: "AWS Glue Workflows" },
+                    { id: "E", text: "Amazon Comprehend Custom Classification" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Bedrock Agents permite que desenvolvedores criem agentes baseados em IA Generativa capazes de executar tarefas multietapas orquestradas. O agente divide a solicitação do usuário, raciocina sobre os passos necessários, consulta bases de conhecimento se preciso e chama funções AWS Lambda para interagir com APIs e sistemas externos."
+            },
+            {
+                id: 21,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Qual das seguintes métricas de avaliação é usada primariamente para medir a precisão de um modelo de Regressão (que prevê valores contínuos como vendas ou temperaturas), em vez de um modelo de Classificação?",
+                options: [
+                    { id: "A", text: "Matriz de Confusão (Confusion Matrix)" },
+                    { id: "B", text: "F1-Score" },
+                    { id: "C", text: "RMSE (Root Mean Square Error - Erro Quadrático Médio)" },
+                    { id: "D", text: "Acurácia (Accuracy)" },
+                    { id: "E", text: "ROC-AUC Curve" }
+                ],
+                correctOption: "C",
+                explanation: "O RMSE (Erro Quadrático Médio) calcula a magnitude da diferença entre os valores numéricos previstos pelo modelo e os valores reais. É uma métrica essencial para modelos de Regressão. Acurácia, F1-Score, ROC-AUC e Matriz de Confusão são métricas para modelos de Classificação."
+            },
+            {
+                id: 22,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Qual técnica de adaptação de Foundation Models permite treinar apenas um pequeno subconjunto de parâmetros adicionais (adaptadores de baixo rank) mantendo os pesos originais do modelo congelados, reduzindo drasticamente os custos de GPU para customização?",
+                options: [
+                    { id: "A", text: "Full Fine-Tuning" },
+                    { id: "B", text: "LoRA (Low-Rank Adaptation) / PEFT (Parameter-Efficient Fine-Tuning)" },
+                    { id: "C", text: "Continued Pre-training do zero" },
+                    { id: "D", text: "Distilação de Prompts" },
+                    { id: "E", text: "Zero-Shot Learning" }
+                ],
+                correctOption: "B",
+                explanation: "LoRA (Low-Rank Adaptation) é uma forma proeminente de PEFT (Parameter-Efficient Fine-Tuning). Ela congela os pesos originais do Foundation Model e introduz matrizes treináveis de menor dimensão, reduzindo os requisitos de memória de GPU e custo de treinamento em mais de 80% sem perda significativa de performance."
+            },
+            {
+                id: 23,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa precisa garantir que dados armazenados nos instâncias do SageMaker Notebook e nos volumes EBS associados sejam criptografados utilizando chaves sob controle total do seu departamento de segurança. O que deve ser fornecido durante a criação das instâncias do SageMaker?",
+                options: [
+                    { id: "A", text: "Uma chave SSH pública para o par de chaves EC2." },
+                    { id: "B", text: "Uma AWS KMS Customer Managed Key (CMK)." },
+                    { id: "C", text: "Um certificado SSL autoassinado do IAM Client VPN." },
+                    { id: "D", text: "O hash SHA-256 do bucket S3." },
+                    { id: "E", text: "Uma senha secreta salva no AWS Secrets Manager sem rotação." }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon SageMaker permite especificar uma chave do AWS KMS (Key Management Service) gerenciada pelo cliente (CMK) para criptografar volumes de dados EBS anexados a instâncias de notebook, treinos e endpoints de inferência, além de artefatos de dados salvos no S3."
+            },
+            {
+                id: 24,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Qual o serviço da AWS que permite que analistas de negócios sem conhecimento prévio em código ou algoritmos de ML criem previsões precisas de dados tabulares (como previsão de churn ou demanda) usando uma interface visual sem código (no-code)?",
+                options: [
+                    { id: "A", text: "Amazon SageMaker Canvas" },
+                    { id: "B", text: "Amazon QuickSight AI" },
+                    { id: "C", text: "AWS Glue DataBrew" },
+                    { id: "D", text: "Amazon Q Developer" },
+                    { id: "E", text: "Amazon SageMaker Studio Code Editor" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon SageMaker Canvas é uma interface visual no-code que permite a analistas de negócios criar modelos de Machine Learning e gerar previsões de negócios a partir de dados tabulares, imagens ou texto, integrando-se também a modelos de base do Amazon Bedrock sem precisar programar."
+            },
+            {
+                id: 25,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Ao utilizar o Amazon Bedrock Guardrails, qual recurso é especificamente utilizado para verificar se a resposta gerada pelo Foundation Model está estritamente fundamentada no contexto fornecido pelos documentos da busca RAG, prevenindo alucinações?",
+                options: [
+                    { id: "A", text: "Denied Topics Filter" },
+                    { id: "B", text: "Profanity Filter" },
+                    { id: "C", text: "Contextual Grounding Check" },
+                    { id: "D", text: "PII Masking Filter" },
+                    { id: "E", text: "Regex Custom Pattern" }
+                ],
+                correctOption: "C",
+                explanation: "O Contextual Grounding Check no Amazon Bedrock Guardrails avalia a relação entre a resposta gerada pelo modelo, o prompt do usuário e a passagem de referência recuperada (no RAG). Ele detecta alucinações e bloqueia respostas que não sejam diretamente suportadas pelas fontes de conhecimento fornecidas."
+            },
+            {
+                id: 26,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa de e-commerce precisa extrair o texto impresso e manuscrito de notas fiscais digitalizadas em PDF e converter essas informações estruturadas em campos JSON para salvamento no banco de dados. Qual serviço de IA pré-treinado da AWS é focado em análise inteligente de documentos?",
+                options: [
+                    { id: "A", text: "Amazon Rekognition" },
+                    { id: "B", text: "Amazon Textract" },
+                    { id: "C", text: "Amazon Comprehend" },
+                    { id: "D", text: "Amazon Transcribe" },
+                    { id: "E", text: "Amazon Polly" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Textract é o serviço de IA especializado em OCR (Reconhecimento Óptico de Caracteres) inteligente que extrai automaticamente textos, formulários, tabelas e dados manuscritos de documentos digitalizados sem necessidade de configuração manual de templates."
+            },
+            {
+                id: 27,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Em uma matriz de confusão para um modelo de diagnóstico médico, o que representa o evento 'Falso Negativo' (False Negative) e por que ele costuma ser o erro mais crítico em diagnósticos de saúde?",
+                options: [
+                    { id: "A", text: "O modelo previu que o paciente tem a doença, mas o paciente é saudável." },
+                    { id: "B", text: "O modelo previu que o paciente é saudável, mas o paciente realmente possui a doença." },
+                    { id: "C", text: "O modelo previu corretamente que o paciente está saudável." },
+                    { id: "D", text: "O modelo recusou-se a emitir um diagnóstico por falta de dados." },
+                    { id: "E", text: "O modelo gerou um resultado aleatório devido à alta temperatura." }
+                ],
+                correctOption: "B",
+                explanation: "Um Falso Negativo ocorre quando a condição real é Positiva (paciente doente), mas o modelo prevê Negativo (saudável). Em diagnósticos de saúde, esse erro é extremamente perigoso/crítico pois priva um paciente enfermo de receber o tratamento necessário a tempo."
+            },
+            {
+                id: 28,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Qual a função do parâmetro 'Stop Sequences' (Sequências de Parada) durante a geração de inferência em um Foundation Model de texto no Amazon Bedrock?",
+                options: [
+                    { id: "A", text: "Interromper imediatamente o faturamento da conta AWS caso o limite de crédito seja atingido." },
+                    { id: "B", text: "Especificar um ou mais conjuntos de caracteres (ex: 'User:', '###', '\n') que, ao serem gerados pelo modelo, fazem com que a geração de texto pare imediatamente." },
+                    { id: "C", text: "Reduzir a velocidade das GPUs no SageMaker para evitar sobreaquecimento." },
+                    { id: "D", text: "Bloquear requisições vindas de endereços IP externos à VPC." },
+                    { id: "E", text: "Aumentar a contagem de tokens de saída para gerar parágrafos mais longos." }
+                ],
+                correctOption: "B",
+                explanation: "Stop Sequences são cadeias de texto pré-definidas enviadas na chamada de inferência. Quando o LLM gera esses caracteres durante a saída, a geração é interrompida no mesmo instante. Isso é vital em chatbots estruturados para evitar que o modelo continue gerando as falas do próprio usuário fictício."
+            },
+            {
+                id: 29,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma grande corporação exige que todas as chamadas de API feitas aos serviços de IA da AWS (como chamadas InvokeModel no Bedrock ou CreateTrainingJob no SageMaker) sejam gravadas com detalhes do IP do solicitante, identidade IAM, horário e parâmetros para auditoria de segurança. Qual serviço fornece esses logs de auditoria de chamadas de API?",
+                options: [
+                    { id: "A", text: "AWS CloudTrail" },
+                    { id: "B", text: "Amazon CloudWatch Metrics" },
+                    { id: "C", text: "AWS Trusted Advisor" },
+                    { id: "D", text: "Amazon VPC Flow Logs" },
+                    { id: "E", text: "AWS Compute Optimizer" }
+                ],
+                correctOption: "A",
+                explanation: "O AWS CloudTrail grava e monitora continuamente todas as atividades de conta e chamadas de API na sua infraestrutura AWS. Ele permite saber exatamente 'quem' fez 'qual' chamada em 'qual' recurso de IA e 'quando'."
+            },
+            {
+                id: 30,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa de contact center grava milhares de chamadas de suporte telefônico por dia em arquivos de áudio .WAV no Amazon S3. Eles querem transcrever automaticamente esses áudios em texto e, em seguida, analisar a tonalidade (positiva, negativa, neutra) da conversa do cliente. Qual combinação de serviços gerenciados atende a essa necessidade?",
+                options: [
+                    { id: "A", text: "Amazon Polly e Amazon Rekognition" },
+                    { id: "B", text: "Amazon Transcribe e Amazon Comprehend" },
+                    { id: "C", text: "Amazon Translate e Amazon Textract" },
+                    { id: "D", text: "Amazon Q Developer e AWS Glue" },
+                    { id: "E", text: "Amazon Bedrock Titan Image e Amazon Lex" }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Transcribe converte arquivos de áudio falado em texto escrito (Speech-to-Text). Em seguida, o Amazon Comprehend realiza o Processamento de Linguagem Natural (NLP), fazendo a Análise de Sentimento (Sentiment Analysis) do texto transcrito."
+            },
+            {
+                id: 31,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Qual opção do Amazon Bedrock permite garantir taxa de transferência dedicada (throughput) com unidades de modelo provisionadas (Provisioned Throughput) sem variações de latência para aplicações de alta demanda?",
+                options: [
+                    { id: "A", text: "On-Demand Pricing" },
+                    { id: "B", text: "Provisioned Throughput (com compromisso de alocação de Model Units)" },
+                    { id: "C", text: "Spot Model Instances" },
+                    { id: "D", text: "Bedrock Serverless Autoscaling free tier" },
+                    { id: "E", text: "AWS Savings Plans para EC2" }
+                ],
+                correctOption: "B",
+                explanation: "Para cargas de trabalho de produção críticas que necessitam de latência garantida e capacidade constante, o Amazon Bedrock oferece o Provisioned Throughput. O cliente contrata Unidades de Modelos (Model Units) dedicadas por períodos de tempo definidos."
+            },
+            {
+                id: 32,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "O conceito de 'Transparência de Modelo' e 'Explicabilidade' (Explainability) em soluções de IA refere-se a qual das seguintes práticas?",
+                options: [
+                    { id: "A", text: "Garantir que o código-fonte do modelo seja postado publicamente no GitHub como código aberto." },
+                    { id: "B", text: "Prover mecanismos, documentações e métricas que permitam entender os fatores, variáveis e lógicas de dados que influenciaram uma decisão gerada pelo modelo." },
+                    { id: "C", text: "Tornar os volumes EBS do SageMaker visíveis para qualquer usuário da internet sem senha." },
+                    { id: "D", text: "Usar monitores transparentes para visualizar o treinamento de redes neurais em tempo real." },
+                    { id: "E", text: "Permitir que o modelo altere seus próprios pesos de forma totalmente não supervisionada." }
+                ],
+                correctOption: "B",
+                explanation: "Transparência e Explicabilidade envolvem a capacidade de compreender, auditar e explicar o raciocínio interno ou a importância dos atributos nas saídas de um sistema de IA, garantindo governança e responsabilidade diante de usuários e reguladores."
+            },
+            {
+                id: 33,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Em Machine Learning, qual o objetivo principal da etapa de 'Engenharia de Recursos' (Feature Engineering)?",
+                options: [
+                    { id: "A", text: "Comprar GPUs e servidores de maior capacidade na AWS." },
+                    { id: "B", text: "Selecionar, transformar, combinar e criar as variáveis (atributos) mais relevantes a partir dos dados brutos para melhorar o aprendizado do modelo." },
+                    { id: "C", text: "Desenhar logotipos e interfaces gráficas para aplicativos móveis." },
+                    { id: "D", text: "Apagar permanentemente metade dos dados para economizar espaço no S3." },
+                    { id: "E", text: "Converter o modelo treinado em um arquivo PDF para impressão." }
+                ],
+                correctOption: "B",
+                explanation: "Engenharia de Recursos (Feature Engineering) é o processo de transformar dados brutos em atributos (features) estruturados que representem melhor o problema subjacente para os algoritmos de aprendizado de máquina, aumentando a precisão preditiva."
+            },
+            {
+                id: 34,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "O que caracteriza a métrica ROUGE (Recall-Oriented Understudy for Gisting Evaluation) na avaliação de desempenho de modelos de linguagem generativos?",
+                options: [
+                    { id: "A", text: "A velocidade em milissegundos que a GPU leva para gerar o primeiro token." },
+                    { id: "B", text: "A medição da sobreposição de n-gramas (palavras e sequências) entre o texto gerado pelo modelo e textos de referência escritos por humanos, comumente usada para avaliar resumos." },
+                    { id: "C", text: "A quantidade de energia elétrica consumida durante o Fine-Tuning do modelo." },
+                    { id: "D", text: "A contagem de erros de sintaxe e identação em códigos Python gerados." },
+                    { id: "E", text: "A taxa de transferência de pacotes de rede na VPC." }
+                ],
+                correctOption: "B",
+                explanation: "ROUGE é uma métrica padrão utilizada para avaliar a qualidade de textos gerados por modelos de IA (especialmente em tarefas de Sumarização), comparando a presença de n-gramas do texto gerado contra um resumo humano de referência."
+            },
+            {
+                id: 35,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Um desenvolvedor está tentando invocar o Amazon Bedrock a partir de um script Python rodando na sua máquina local de desenvolvimento. A chamada falha com um erro 'AccessDeniedException'. Qual é a causa mais provável e a correção necessária?",
+                options: [
+                    { id: "A", text: "A máquina local precisa estar dentro da VPC da AWS via AWS Direct Connect obrigatoriamente." },
+                    { id: "B", text: "As credenciais AWS configuradas no ambiente local não possuem a política IAM com a permissão `bedrock:InvokeModel` e/ou o acesso ao modelo não foi concedido no console do Bedrock." },
+                    { id: "C", text: "O Amazon Bedrock só pode ser chamado via linguagem Java." },
+                    { id: "D", text: "A temperatura do prompt está muito baixa para conexões externas." },
+                    { id: "E", text: "O bucket S3 de destino precisa ter acesso público liberado." }
+                ],
+                correctOption: "B",
+                explanation: "Erros de 'AccessDeniedException' indicam falta de autorização no IAM ou no serviço. No Bedrock, é necessário ter a política IAM permitindo `bedrock:InvokeModel` E também habilitar explicitamente a permissão de acesso ao modelo (Model Access) na página de gerenciamento de acesso a modelos no console do Bedrock."
+            },
+            {
+                id: 36,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma empresa de mídia internacional quer traduzir legendas de vídeos em inglês automaticamente para espanhol, francês e português mantendo a fluência natural. Qual serviço gerenciado especializado é a escolha ideal?",
+                options: [
+                    { id: "A", text: "Amazon Translate" },
+                    { id: "B", text: "Amazon Lex" },
+                    { id: "C", text: "Amazon Pinpoint" },
+                    { id: "D", text: "Amazon Personalize" },
+                    { id: "E", text: "AWS DataSync" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Translate é um serviço de tradução automática neural rápido, de alta qualidade e acessível via API, projetado para converter textos entre diversos idiomas suportados de forma natural."
+            },
+            {
+                id: 37,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "No contexto de Foundation Models e Grandes Modelos de Linguagem (LLMs), o que significa a 'Janela de Contexto' (Context Window)?",
+                options: [
+                    { id: "A", text: "A janela física do sistema operacional onde a IDE está aberta." },
+                    { id: "B", text: "A quantidade máxima de tokens (texto de entrada e saída combinados) que o modelo consegue processar e considerar em uma única interação." },
+                    { id: "C", text: "O tempo máximo de tolerância de timeout de um Load Balancer na AWS." },
+                    { id: "D", text: "A quantidade de monitores conectados à máquina do desenvolvedor." },
+                    { id: "E", text: "O intervalo de tempo em horas entre os backups automáticos do modelo." }
+                ],
+                correctOption: "B",
+                explanation: "A Janela de Contexto (Context Window) refere-se ao limite máximo de tokens que o modelo pode 'lembrar' e processar ao mesmo tempo em uma chamada de inferência. Modelos modernos possuem janelas variando de 4k até centenas de milhares de tokens (ex: Claude 3 com 200k tokens)."
+            },
+            {
+                id: 38,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Quando o modelo de linguagem responde a uma pergunta de forma extremamente confiante e convincente, porém inventa fatos falsos, nomes inexistentes ou citações bibliográficas que não existem no mundo real, como é chamado esse comportamento?",
+                options: [
+                    { id: "A", text: "Vazamento de gradiente (Gradient Leakage)" },
+                    { id: "B", text: "Alucinação (Hallucination)" },
+                    { id: "C", text: "Overfitting de hiperparâmetros" },
+                    { id: "D", text: "Injeção de SQL em IA" },
+                    { id: "E", text: "Catastrophic Forgetting" }
+                ],
+                correctOption: "B",
+                explanation: "Alucinação é o termo técnico para quando um modelo generativo gera informações imprecisas, incorretas ou totalmente fabricadas enquanto mantém um tom confiante e plausível."
+            },
+            {
+                id: 39,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Qual o algoritmo de Aprendizado de Máquina Supervisionado comumente utilizado para agrupar instâncias com base nas variáveis mais próximas em um espaço vetorial de distâncias (ex: distância euclidiana)?",
+                options: [
+                    { id: "A", text: "K-Nearest Neighbors (K-NN)" },
+                    { id: "B", text: "Linear Regression" },
+                    { id: "C", text: "Naïve Bayes" },
+                    { id: "D", text: "Apriori Association" },
+                    { id: "E", text: "Random Cut Forest" }
+                ],
+                correctOption: "A",
+                explanation: "O K-Nearest Neighbors (K-NN) é um algoritmo de aprendizado supervisionado baseado em instâncias que classifica novas amostras com base na maioria dos votos dos seus 'K' vizinhos mais próximos no espaço vetorial."
+            },
+            {
+                id: 40,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Uma rede de varejo precisa criar um sistema de recomendações personalizadas para o aplicativo móvel, onde cada cliente visualize produtos com base nos seus históricos individuais de compras e navegação recente. Qual serviço especializado de IA fornece recomendações personalizadas prontas para uso?",
+                options: [
+                    { id: "A", text: "Amazon Personalize" },
+                    { id: "B", text: "Amazon Forecast" },
+                    { id: "C", text: "Amazon Bedrock Guardrails" },
+                    { id: "D", text: "Amazon Comprehend" },
+                    { id: "E", text: "Amazon Kendra" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Personalize é um serviço gerenciado de recomendação baseado na mesma tecnologia de aprendizado de máquina e personalização utilizada pela Amazon.com."
+            },
+            {
+                id: 41,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa quer auditar o código-fonte de suas aplicações em busca de dados credenciais expostas (passwords, chaves AWS) e falhas de segurança conhecidas (OWASP Top 10) diretamente na esteira de integração contínua (CI/CD) ou IDE. Qual ferramenta realiza varredura de segurança de código de forma generativa?",
+                options: [
+                    { id: "A", text: "Amazon Q Developer (Security Scanning)" },
+                    { id: "B", text: "AWS Shield Standard" },
+                    { id: "C", text: "Amazon Route 53 Resolver" },
+                    { id: "D", text: "AWS Key Management Service" },
+                    { id: "E", text: "Amazon Bedrock Studio" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Q Developer oferece recursos avançados de varredura de segurança de código (Code Security Scanning), identificando vulnerabilidades como vazamentos de chaves, injeção de SQL e propondo correções automáticas de código na IDE."
+            },
+            {
+                id: 42,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Qual técnica de otimização de custo e latência envolve usar um modelo menor e mais rápido (ex: Claude 3 Haiku) para triagem inicial de prompts simples, e redirecionar apenas consultas complexas para um modelo maior (ex: Claude 3 Opus)?",
+                options: [
+                    { id: "A", text: "Roteamento de Modelos (Model Routing / Cascading)" },
+                    { id: "B", text: "Quantização sem perdas" },
+                    { id: "C", text: "Conexão VPN Multicast" },
+                    { id: "D", text: "Amostragem de Temperatura Negativa" },
+                    { id: "E", text: "Criptografia Homomórfica" }
+                ],
+                correctOption: "A",
+                explanation: "Roteamento de Modelos (Model Cascading/Routing) é uma arquitetura eficiente onde um orquestrador analisa a complexidade da intenção do usuário. Perguntas triviais são tratadas por modelos menores e mais baratos, reduzindo os custos gerais em até 70%."
+            },
+            {
+                id: 43,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Sua empresa deseja construir uma aplicação conversacional interna utilizando o Amazon Bedrock Knowledge Bases. Quais são os três componentes fundamentais exigidos para que a arquitetura RAG funcione dentro do Bedrock?",
+                options: [
+                    { id: "A", text: "Um banco de dados S3 com arquivos, um modelo de embedding (ex: Titan Embeddings) e um armazenamento/índice vetorial (ex: OpenSearch Serverless)." },
+                    { id: "B", text: "Uma instância EC2 GPU, um cabo AWS Direct Connect e um servidor MySQL público." },
+                    { id: "C", text: "Um script em C++, uma conta no GitHub e um bucket no Google Cloud." },
+                    { id: "D", text: "Um modelo Rekognition, um microfone e o Amazon Polly." },
+                    { id: "E", text: "Um arquivo .EXE, o CloudFront e um certificado Route 53." }
+                ],
+                correctOption: "A",
+                explanation: "No Amazon Bedrock Knowledge Bases, a solução RAG requer: 1) Fonte de dados bruta (Amazon S3), 2) Modelo de embedding (para converter texto em vetores) e 3) Um banco de dados/mecanismo de busca vetorial (Amazon OpenSearch Serverless, Pinecone, Redis Enterprise ou Aurora PGVector)."
+            },
+            {
+                id: 44,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Qual tipo de aprendizado de máquina é baseado no conceito de um 'Agente' que interage com um 'Ambiente', realizando ações e recebendo 'Recompensas' ou 'Penalidades' para aprender a política ótima (ex: robótica e jogos)?",
+                options: [
+                    { id: "A", text: "Aprendizado por Reforço (Reinforcement Learning)" },
+                    { id: "B", text: "Aprendizado Supervisionado de Regressão" },
+                    { id: "C", text: "Aprendizado Não Supervisionado por K-Means" },
+                    { id: "D", text: "Deep Learning Convolucional Estático" },
+                    { id: "E", text: "Processamento Batch ETL" }
+                ],
+                correctOption: "A",
+                explanation: "O Aprendizado por Reforço (Reinforcement Learning - RL) foca em treinar agentes para tomar decisões sequenciais em um ambiente dinâmico maximizando recompensas acumuladas."
+            },
+            {
+                id: 45,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Uma empresa treinou um modelo de previsão de vendas com dados históricos coletados entre 2018 e 2019. Ao usar esse modelo em 2026, a performance despencou drasticamente devido a mudanças comportamentais no mercado. Esse fenômeno de mudança nas propriedades estatísticas dos dados de entrada ao longo do tempo é denominado:",
+                options: [
+                    { id: "A", text: "Data Drift / Concept Drift (Deriva de Dados/Conceito)" },
+                    { id: "B", text: "Overfitting de GPU" },
+                    { id: "C", text: "Vazamento de Memória do S3" },
+                    { id: "D", text: "Incompatibilidade de VPC Endpoint" },
+                    { id: "E", text: "Ataque de Força Bruta" }
+                ],
+                correctOption: "A",
+                explanation: "Data Drift (ou Concept Drift) ocorre quando as relações estatísticas entre os dados de treinamento e os dados do mundo real mudam ao longo do tempo, degradando a acurácia do modelo e exigindo retreinamento."
+            },
+            {
+                id: 46,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Qual serviço AWS permite definir políticas centrais de controle de segurança (SCPs - Service Control Policies) para proibir que desenvolvedores criem ou usem instâncias de IA não autorizadas ou alterem configurações em múltiplas contas AWS da organização?",
+                options: [
+                    { id: "A", text: "AWS Organizations" },
+                    { id: "B", text: "AWS Secrets Manager" },
+                    { id: "C", text: "AWS Systems Manager Agent" },
+                    { id: "D", text: "Amazon EventBridge" },
+                    { id: "E", text: "AWS Cloud9" }
+                ],
+                correctOption: "A",
+                explanation: "O AWS Organizations permite gerenciar centralmente o ambiente de múltiplas contas e aplicar Service Control Policies (SCPs) que estabelecem limites de permissões globais sobre o que pode ou não ser executado nas contas filhas."
+            },
+            {
+                id: 47,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "O que é o Amazon Q Apps, uma funcionalidade do Amazon Q Business?",
+                options: [
+                    { id: "A", text: "Um aplicativo móvel para iOS e Android para jogar jogos de IA." },
+                    { id: "B", text: "Um recurso que permite a usuários de negócios criar aplicações geradas por IA instantâneas a partir de um prompt de conversa simples para automatizar tarefas cotidianas." },
+                    { id: "C", text: "Um compilador de código C++ hospedado no EC2." },
+                    { id: "D", text: "Um substituto para o AWS Management Console." },
+                    { id: "E", text: "Um antivírus gerenciado pela AWS." }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Q Apps permite que funcionários criei aplicativos web personalizados e reutilizáveis baseados nos dados e contextos da empresa a partir de descrições em linguagem natural no chat do Amazon Q Business."
+            },
+            {
+                id: 48,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Como o ajuste do parâmetro 'Top K' afeta a geração de texto em um modelo de linguagem no Amazon Bedrock?",
+                options: [
+                    { id: "A", text: "Define o número K de GPUs alocadas no servidor de inferência." },
+                    { id: "B", text: "Limita o conjunto de opções do modelo apenas às 'K' palavras mais prováveis da distribuição antes de selecionar a próxima palavra." },
+                    { id: "C", text: "Multiplica o valor do token pelo número K." },
+                    { id: "D", text: "Define a quantidade máxima de tentativas de reconexão de rede." },
+                    { id: "E", text: "Remove as últimas K linhas do prompt." }
+                ],
+                correctOption: "B",
+                explanation: "O parâmetro Top K instrui o modelo a considerar apenas as K opções mais prováveis para o próximo token. Um Top K baixo (ex: 1) torna a saída muito conservadora e focada, enquanto um Top K mais alto permite maior variedade."
+            },
+            {
+                id: 49,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Qual o principal diferencial de Aprendizado Profundo (Deep Learning) em relação aos métodos tradicionais de Machine Learning?",
+                options: [
+                    { id: "A", text: "Deep Learning não precisa de nenhum dado para treinar." },
+                    { id: "B", text: "Deep Learning utiliza redes neurais artificiais com múltiplas camadas profundas para extrair automaticamente representações de recursos de dados não estruturados (imagens, áudio, texto)." },
+                    { id: "C", text: "Deep Learning roda exclusivamente em bancos de dados SQL." },
+                    { id: "D", text: "Deep Learning nunca comete erros de precisão." },
+                    { id: "E", text: "Deep Learning não consome capacidade computacional de GPUs." }
+                ],
+                correctOption: "B",
+                explanation: "Deep Learning utiliza arquiteturas de redes neurais profundas capazes de realizar extração automática de hierarquias de recursos sem a necessidade explícita de Feature Engineering manual, excelente para dados não estruturados."
+            },
+            {
+                id: 50,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Por padrão, quando você envia dados de prompt e documentos para o Amazon Bedrock para inferência, a AWS utiliza esses seus dados de cliente para treinar os modelos de base públicos da AWS ou repassar a fornecedores terceiros?",
+                options: [
+                    { id: "A", text: "Sim, todos os prompts são tornados públicos automaticamente." },
+                    { id: "B", text: "Não. A AWS garante contratualmente que os dados do cliente e prompts NO Amazon Bedrock JAMAIS são utilizados para treinar modelos de base da AWS ou compartilhados com fornecedores." },
+                    { id: "C", text: "Apenas se o prompt contiver código em Python." },
+                    { id: "D", text: "Sim, os dados ficam armazenados na conta do fornecedor do modelo." },
+                    { id: "E", text: "Apenas aos finais de semana." }
+                ],
+                correctOption: "B",
+                explanation: "Garantia fundamental do Amazon Bedrock: Os dados de entrada (prompts), saídas e embeddings do cliente são totalmente privados, mantidos na conta do cliente e NUNCA são usados para treinar os Foundation Models de base da AWS ou de terceiros."
+            },
+            {
+                id: 51,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Qual serviço de IA pré-treinado da AWS é capaz de reconhecer rostos, analisar emoções, identificar objetos e detectar conteúdo inadequado em imagens e arquivos de vídeo?",
+                options: [
+                    { id: "A", text: "Amazon Rekognition" },
+                    { id: "B", text: "Amazon Textract" },
+                    { id: "C", text: "Amazon Polly" },
+                    { id: "D", text: "Amazon Comprehend" },
+                    { id: "E", text: "Amazon Transcribe" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Rekognition é o serviço de análise de visão computacional pré-treinado para automação de tarefas em imagens e vídeos."
+            },
+            {
+                id: 52,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "O que é 'Contaminação de Dados' (Data Contamination) no ciclo de vida de treinamento de Grandes Modelos de Linguagem?",
+                options: [
+                    { id: "A", text: "Quando dados de vírus e malware infectam os servidores do SageMaker." },
+                    { id: "B", text: "Quando os dados do conjunto de teste ou avaliação vazam inadvertidamente para o conjunto de dados de treinamento do modelo, gerando métricas de avaliação falsamente infladas." },
+                    { id: "C", text: "Quando os arquivos CSV são salvos em formato UTF-16." },
+                    { id: "D", text: "Quando o bucket S3 perde o acesso à internet." },
+                    { id: "E", text: "Quando os prompts contêm erros ortográficos." }
+                ],
+                correctOption: "B",
+                explanation: "Contaminação de dados ocorre quando exemplos que deveriam ser usados exclusivamente para testar de forma neutra a capacidade do modelo acabam presentes na base de treinamento, adulterando o resultado dos testes."
+            },
+            {
+                id: 53,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Em uma aplicação de detecção de spam de e-mails, qual a definição de 'Precisão' (Precision)?",
+                options: [
+                    { id: "A", text: "A proporção de e-mails identificados como spam pelo modelo que eram REALMENTE spams legítimos." },
+                    { id: "B", text: "A velocidade em segundos com que o e-mail chega à caixa de entrada." },
+                    { id: "C", text: "A quantidade total de e-mails armazenados no servidor." },
+                    { id: "D", text: "A porcentagem de e-mails apagados pelo usuário." },
+                    { id: "E", text: "A taxa de transferência da conexão de fibra óptica." }
+                ],
+                correctOption: "A",
+                explanation: "Precisão = Verdadeiros Positivos / (Verdadeiros Positivos + Falsos Positivos). Responde à pergunta: 'De tudo o que o modelo previu como positivo (spam), quanto realmente era positivo?'."
+            },
+            {
+                id: 54,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "O que significa 'Inference' (Inferência) no ciclo de vida de IA?",
+                options: [
+                    { id: "A", text: "O processo de ajustar os pesos da rede neural via retropropagação (backpropagation)." },
+                    { id: "B", text: "A etapa de utilizar um modelo já treinado para processar novos dados de entrada e gerar previsões ou conteúdos em tempo real." },
+                    { id: "C", text: "O ato de deletar instâncias não utilizadas para economizar custos." },
+                    { id: "D", text: "A fase de rotular manualmente dados com o SageMaker Ground Truth." },
+                    { id: "E", text: "A instalação da biblioteca boto3 no Python." }
+                ],
+                correctOption: "B",
+                explanation: "Inferência é a fase operacional onde o modelo treinado recebe dados de entrada (prompts ou dados de teste) e produz uma saída/resposta."
+            },
+            {
+                id: 55,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa deseja limitar os custos de chamadas de API ao Amazon Bedrock para que seus times não ultrapassem o orçamento mensal. Qual serviço de governança financeira envia alertas proativos e pode acionar ações automáticas quando os custos previstos excedem o limite estipulado?",
+                options: [
+                    { id: "A", text: "AWS Budgets" },
+                    { id: "B", text: "AWS Price List API" },
+                    { id: "C", text: "Amazon Bedrock Metering Console" },
+                    { id: "D", text: "AWS Cost Explorer PDF Export" },
+                    { id: "E", text: "Amazon CloudWatch Logs Insights" }
+                ],
+                correctOption: "A",
+                explanation: "O AWS Budgets permite definir orçamentos personalizados para rastrear seus custos da AWS e enviar alertas via e-mail ou SNS quando seus custos reais ou projetados ultrapassarem os limites estabelecidos."
+            },
+            {
+                id: 56,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "O que é o Amazon Bedrock Studio?",
+                options: [
+                    { id: "A", text: "Um aplicativo de edição de vídeo profissional para cinema." },
+                    { id: "B", text: "Um ambiente web colaborativo e seguro que permite que equipes de negócios e desenvolvedores experimentem e criem protótipos de aplicações baseadas em FMs com Guardrails e Knowledge Bases utilizando Single Sign-On." },
+                    { id: "C", text: "Um estúdio de gravação física localizado na sede da AWS em Seattle." },
+                    { id: "D", text: "Uma IDE baseada em Eclipse para programar em C#." },
+                    { id: "E", text: "Uma extensão paga do Microsoft Excel." }
+                ],
+                correctOption: "B",
+                explanation: "O Amazon Bedrock Studio é uma interface gráfica de prototipagem e experimentação rápida que facilita o trabalho em equipe na criação de soluções de IA Generativa sem exigir gerenciamento direto do Console AWS."
+            },
+            {
+                id: 57,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Qual o propósito do documento publicado pela AWS conhecido como 'AWS AI Service Cards'?",
+                options: [
+                    { id: "A", text: "Cartões de crédito corporativos para pagar faturas da AWS." },
+                    { id: "B", text: "Recursos de documentação transparente que fornecem aos clientes informações sobre o uso pretendido, limitações, melhores práticas e performance responsável dos serviços de IA da AWS (ex: Rekognition, Comprehend)." },
+                    { id: "C", text: "Cartões postais físicos enviados aos profissionais certificados." },
+                    { id: "D", text: "Placas de vídeo aceleração física instaladas nas instâncias." },
+                    { id: "E", text: "Vouchers de desconto para o exame de certificação." }
+                ],
+                correctOption: "B",
+                explanation: "Os AWS AI Service Cards são documentos oficiais que detalham o funcionamento responsável, casos de uso recomendados, limitações conhecidas e métricas de avaliação dos serviços de IA gerenciados da AWS."
+            },
+            {
+                id: 58,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "O que é Aprendizado Não Supervisionado (Unsupervised Learning) e para qual dos problemas abaixo ele é mais indicado?",
+                options: [
+                    { id: "A", text: "Prever se um e-mail é spam utilizando rótulos prévios." },
+                    { id: "B", text: "Descobrir padrões ocultos ou agrupamentos naturais (clusters) em dados de clientes sem rótulos prévios." },
+                    { id: "C", text: "Calcular o valor exato do imposto de renda de uma empresa." },
+                    { id: "D", text: "Controlar o voo de um drone através de recompensas." },
+                    { id: "E", text: "Traduzir um texto do inglês para o alemão." }
+                ],
+                correctOption: "B",
+                explanation: "Aprendizado Não Supervisionado trabalha com dados não rotulados para identificar estruturas intrínsecas, distribuições ou agrupamentos (clústeres) ocultos nos dados."
+            },
+            {
+                id: 59,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "Qual a diferença principal entre 'Fine-Tuning' e 'Retrieval-Augmented Generation (RAG)'?",
+                options: [
+                    { id: "A", text: "Fine-Tuning altera os pesos internos do modelo com dados específicos; RAG busca conhecimento relevante em um banco de dados externo e injeta no prompt sem alterar os pesos do modelo." },
+                    { id: "B", text: "Fine-Tuning é gratuito; RAG custa milhões de dólares por dia." },
+                    { id: "C", text: "RAG altera a arquitetura do hardware; Fine-Tuning deleta os dados." },
+                    { id: "D", text: "Fine-Tuning serve apenas para imagens; RAG serve apenas para áudio." },
+                    { id: "E", text: "Não há diferença entre os dois métodos." }
+                ],
+                correctOption: "A",
+                explanation: "Fine-Tuning modifica os parâmetros/pesos do modelo através de treinamento adicional em um dataset específico. O RAG deixa o modelo intacto e usa recuperação de dados dinâmica (recuperação na hora da pergunta) para complementar o prompt."
+            },
+            {
+                id: 60,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Uma empresa precisa garantir que dados sensíveis transmitidos entre uma aplicação cliente e o Amazon Bedrock estejam protegidos contra interceptação por agentes maliciosos na rede. Qual técnica de segurança atende a esta necessidade?",
+                options: [
+                    { id: "A", text: "Criptografia em trânsito utilizando HTTPS / TLS 1.2+" },
+                    { id: "B", text: "Criptografia em repouso com AES-128 via disquete" },
+                    { id: "C", text: "Limpeza de memória RAM no console" },
+                    { id: "D", text: "Troca periódica de monitores de vídeo" },
+                    { id: "E", text: "Compactação .TAR de dados em trânsito" }
+                ],
+                correctOption: "A",
+                explanation: "A criptografia em trânsito (In-Transit Encryption) via conexões seguras TLS/HTTPS garante que todos os dados transmitidos entre o cliente e os endpoints dos serviços AWS estejam cifrados e protegidos contra bisbilhotagem (eavesdropping)."
+            },
+            {
+                id: 61,
+                domain: "Domínio 3: Aplicações de Modelos de Base",
+                question: "Sua empresa deseja automatizar a conversão de postagens de blog em arquivos de áudio narrados com vozes realistas e naturais para podcasters. Qual serviço especializado de IA realiza conversão de texto para fala (Text-to-Speech)?",
+                options: [
+                    { id: "A", text: "Amazon Polly" },
+                    { id: "B", text: "Amazon Transcribe" },
+                    { id: "C", text: "Amazon Comprehend" },
+                    { id: "D", text: "Amazon Lex" },
+                    { id: "E", text: "AWS Batch" }
+                ],
+                correctOption: "A",
+                explanation: "O Amazon Polly converte textos em fala sintética humanizada (Text-to-Speech) utilizando vozes avançadas e tecnologia neural."
+            },
+            {
+                id: 62,
+                domain: "Domínio 2: Fundamentos de IA Generativa",
+                question: "O que é o efeito de 'Ataque de Jailbreak' em um modelo de IA Generativa?",
+                options: [
+                    { id: "A", text: "A destrava física do hardware do servidor na AWS." },
+                    { id: "B", text: "Uma técnica sofisticada de engenharia de prompt desenhada para desviar ou burlar os filtros de segurança e salvaguardas éticas do modelo para levá-lo a gerar conteúdos restritos ou nocivos." },
+                    { id: "C", text: "A atualização da versão do sistema operacional Linux no EC2." },
+                    { id: "D", text: "A perda de conexão com o banco de dados PostgreSQL." },
+                    { id: "E", text: "O desligamento automático da conta por falta de pagamento." }
+                ],
+                correctOption: "B",
+                explanation: "Jailbreak é uma forma de ataque por injeção de prompt projetada para contornar os filtros de alinhamento e segurança do modelo, forçando-o a emitir respostas que ele normalmente recusaria."
+            },
+            {
+                id: 63,
+                domain: "Domínio 4: Diretrizes de IA Responsável",
+                question: "Ao preparar dados para treinamento de um modelo, você remove variáveis diretas como 'Gênero' e 'Etnia'. No entanto, o modelo continua apresentando viés contra determinados grupos porque utiliza a variável 'CEP de Residência', que guarda alta correlação com a etnia. Como esse conceito é conhecido na área de IA responsável?",
+                options: [
+                    { id: "A", text: "Variável Proxy (Proxy Variable / Implicit Bias)" },
+                    { id: "B", text: "Amostragem Aleatória Simples" },
+                    { id: "C", text: "Normalização por Min-Max" },
+                    { id: "D", text: "Criptografia de Atributos" },
+                    { id: "E", text: "Validação Cruzada K-Fold" }
+                ],
+                correctOption: "A",
+                explanation: "Uma Variável Proxy é um atributo indireto que se correlaciona fortemente com um atributo sensível protegido (como raça, gênero ou idade), permitindo que o modelo continue perpetuando viés velado."
+            },
+            {
+                id: 64,
+                domain: "Domínio 1: Fundamentos de IA e ML",
+                question: "Em uma pipeline de preparação de dados no SageMaker, para que serve a técnica de 'One-Hot Encoding'?",
+                options: [
+                    { id: "A", text: "Aumentar a temperatura das GPUs durante a inferência." },
+                    { id: "B", text: "Converter variáveis categóricas (ex: cores: Vermelho, Azul, Verde) em vetores numéricos binários (0s e 1s) legíveis para algoritmos matemáticos." },
+                    { id: "C", text: "Criptografar dados sensíveis com uma chave secreta do KMS." },
+                    { id: "D", text: "Deletar linhas duplicadas em uma tabela SQL." },
+                    { id: "E", text: "Compactar imagens no formato JPEG." }
+                ],
+                correctOption: "B",
+                explanation: "One-Hot Encoding é o processo de transformar variáveis categóricas não numéricas em representações binárias (vetores de 0 e 1) necessárias para o processamento em modelos numéricos de ML."
+            },
+            {
+                id: 65,
+                domain: "Domínio 5: Segurança, Conformidade e Governança",
+                question: "Para garantir total rastreabilidade das alterações no código e nos datasets de Machine Learning compartilhados por um time de cientistas de dados no Amazon SageMaker, qual serviço da AWS oferece repositórios Git gerenciados e seguros?",
+                options: [
+                    { id: "A", text: "AWS CodeCommit / Git Integration no SageMaker" },
+                    { id: "B", text: "AWS Storage Gateway" },
+                    { id: "C", text: "Amazon DynamoDB Streams" },
+                    { id: "D", text: "AWS Snowball Edge" },
+                    { id: "E", text: "Amazon ElastiCache" }
+                ],
+                correctOption: "A",
+                explanation: "O AWS CodeCommit (ou integrações com GitHub/GitLab no SageMaker Studio) fornece repositórios Git privados gerenciados para controle de versão, histórico de commits e colaboração segura entre equipes de dados."
+            }
+        ];
+
+        function App() {
+            // Estado Principal
+            const [currentIdx, setCurrentIdx] = useState(0);
+            const [answers, setAnswers] = useState(Array(questionsData.length).fill(null));
+            const [flagged, setFlagged] = useState(Array(questionsData.length).fill(false));
+            const [showExplanation, setShowExplanation] = useState(Array(questionsData.length).fill(false));
+            const [examFinished, setExamFinished] = useState(false);
+            const [domainFilter, setDomainFilter] = useState("Todos");
+            const [examMode, setExamMode] = useState(false); // Modo Prática (explicação instantânea) vs Modo Exame (timer)
+            const [timeLeft, setTimeLeft] = useState(90 * 60); // 90 minutos em segundos
+            const [timerActive, setTimerActive] = useState(false);
+
+            // Timer Effect
+            useEffect(() => {
+                let interval = null;
+                if (timerActive && timeLeft > 0 && !examFinished) {
+                    interval = setInterval(() => {
+                        setTimeLeft(prev => prev - 1);
+                    }, 1000);
+                } else if (timeLeft === 0 && timerActive) {
+                    finishExam();
+                }
+                return () => clearInterval(interval);
+            }, [timerActive, timeLeft, examFinished]);
+
+            // Formatação do tempo
+            const formatTime = (seconds) => {
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            // Filtragem de perguntas por domínio
+            const filteredQuestions = useMemo(() => {
+                if (domainFilter === "Todos") return questionsData;
+                if (domainFilter === "FocusAmazonQ") return questionsData.filter(q => q.question.includes("Amazon Q") || q.subtopic.includes("Amazon Q") || q.question.includes("VPC") || q.question.includes("Rede"));
+                return questionsData.filter(q => q.domain.startsWith(domainFilter));
+            }, [domainFilter]);
+
+            // Garantir que o índice atual seja válido dentro da lista filtrada
+            const currentQuestion = filteredQuestions[currentIdx] || filteredQuestions[0];
+            const realQuestionIndex = questionsData.findIndex(q => q.id === currentQuestion.id);
+
+            // Handlers
+            const handleSelectOption = (optionId) => {
+                if (examFinished) return;
+                const newAnswers = [...answers];
+                newAnswers[realQuestionIndex] = optionId;
+                setAnswers(newAnswers);
+            };
+
+            const toggleFlag = (idx) => {
+                const newFlags = [...flagged];
+                newFlags[idx] = !newFlags[idx];
+                setFlagged(newFlags);
+            };
+
+            const toggleExplanation = (idx) => {
+                const newExplanations = [...showExplanation];
+                newExplanations[idx] = !newExplanations[idx];
+                setShowExplanation(newExplanations);
+            };
+
+            const startTimedExam = () => {
+                setExamMode(true);
+                setTimerActive(true);
+                setTimeLeft(90 * 60);
+            };
+
+            const finishExam = () => {
+                setTimerActive(false);
+                setExamFinished(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const resetExam = () => {
+                setAnswers(Array(questionsData.length).fill(null));
+                setFlagged(Array(questionsData.length).fill(false));
+                setShowExplanation(Array(questionsData.length).fill(false));
+                setExamFinished(false);
+                setCurrentIdx(0);
+                setTimerActive(false);
+                setTimeLeft(90 * 60);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            // Cálculo da Pontuação
+            const scoreDetails = useMemo(() => {
+                let correctCount = 0;
+                const domainStats = {};
+
+                questionsData.forEach((q, idx) => {
+                    const isCorrect = answers[idx] === q.correctOption;
+                    if (isCorrect) correctCount++;
+
+                    if (!domainStats[q.domain]) {
+                        domainStats[q.domain] = { total: 0, correct: 0 };
+                    }
+                    domainStats[q.domain].total++;
+                    if (isCorrect) domainStats[q.domain].correct++;
+                });
+
+                const percentage = Math.round((correctCount / questionsData.length) * 100);
+                // Escala AWS de 100 a 1000
+                const awsScaledScore = Math.round(100 + (correctCount / questionsData.length) * 900);
+                const passed = awsScaledScore >= 700;
+
+                return { correctCount, percentage, awsScaledScore, passed, domainStats };
+            }, [answers]);
+
+            if (examFinished) {
+                return (
+                    <div className="max-w-5xl mx-auto my-8 p-4 sm:p-8">
+                        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                            {/* Header de Resultado */}
+                            <div className={`p-8 text-center text-white ${scoreDetails.passed ? 'bg-gradient-to-r from-emerald-600 to-teal-700' : 'bg-gradient-to-r from-rose-600 to-red-700'}`}>
+                                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 mb-4 backdrop-blur-sm">
+                                    <i className={`fas ${scoreDetails.passed ? 'fa-check-circle text-emerald-200' : 'fa-times-circle text-rose-200'} text-5xl`}></i>
+                                </div>
+                                <h1 className="text-3xl sm:text-4xl font-extrabold mb-2">
+                                    {scoreDetails.passed ? 'APROVADO NO SIMULADO!' : 'PRECISA MELHORAR'}
+                                </h1>
+                                <p className="text-lg opacity-90">
+                                    Pontuação AWS AIF-C01 Escalonada: <span className="font-bold text-2xl">{scoreDetails.awsScaledScore}</span> / 1000
+                                </p>
+                                <p className="text-sm opacity-80 mt-1">
+                                    (Nota mínima para aprovação oficial no exame: 700 pontos)
+                                </p>
+                            </div>
+
+                            {/* Resumo de Metricas */}
+                            <div className="p-6 sm:p-8 border-b border-slate-100 bg-slate-50">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                        <span className="text-slate-500 text-xs font-semibold uppercase block">Acertos Totais</span>
+                                        <span className="text-3xl font-extrabold text-slate-800">{scoreDetails.correctCount} / {questionsData.length}</span>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                        <span className="text-slate-500 text-xs font-semibold uppercase block">Porcentagem</span>
+                                        <span className="text-3xl font-extrabold text-slate-800">{scoreDetails.percentage}%</span>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                        <span className="text-slate-500 text-xs font-semibold uppercase block">Status</span>
+                                        <span className={`text-xl font-bold ${scoreDetails.passed ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                            {scoreDetails.passed ? 'Pronto para a Prova' : 'Revisão Necessária'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Detalhamento por Domínio */}
+                            <div className="p-6 sm:p-8">
+                                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                                    <i className="fas fa-chart-pie text-orange-500 mr-2"></i> Desempenho por Domínio da Prova
+                                </h3>
+                                <div className="space-y-4">
+                                    {Object.entries(scoreDetails.domainStats).map(([domain, stat]) => {
+                                        const pct = Math.round((stat.correct / stat.total) * 100);
+                                        const domainPassed = pct >= 70;
+                                        return (
+                                            <div key={domain} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="font-semibold text-slate-700 text-sm">{domain}</span>
+                                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${domainPassed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                                                        {stat.correct}/{stat.total} ({pct}%)
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-slate-200 rounded-full h-2">
+                                                    <div className={`h-2 rounded-full ${domainPassed ? 'bg-emerald-500' : 'bg-rose-500'}`} style={{ width: `${pct}%` }}></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="mt-8 flex flex-wrap gap-4 justify-center">
+                                    <button 
+                                        onClick={resetExam}
+                                        className="bg-orange-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg flex items-center"
+                                    >
+                                        <i className="fas fa-redo mr-2"></i> Reiniciar Simulado
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Revisão de Todas as Respostas */}
+                            <div className="p-6 sm:p-8 bg-slate-50 border-t border-slate-200">
+                                <h3 className="text-xl font-bold text-slate-800 mb-6">Revisão Detalhada das Questões</h3>
+                                <div className="space-y-6">
+                                    {questionsData.map((q, idx) => {
+                                        const userAnswer = answers[idx];
+                                        const isCorrect = userAnswer === q.correctOption;
+                                        return (
+                                            <div key={q.id} className={`p-6 bg-white rounded-xl border-l-4 shadow-sm ${isCorrect ? 'border-emerald-500' : 'border-rose-500'}`}>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-xs font-bold text-slate-400">Questão {q.id} de {questionsData.length}</span>
+                                                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                                                        {isCorrect ? 'ACERTOU' : 'ERROU'}
+                                                    </span>
+                                                </div>
+                                                <p className="font-semibold text-slate-800 mb-4">{q.question}</p>
+                                                
+                                                <div className="space-y-2 mb-4">
+                                                    {q.options.map(opt => {
+                                                        let optClass = "p-3 rounded-lg border text-sm flex items-center ";
+                                                        if (opt.id === q.correctOption) {
+                                                            optClass += "bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold";
+                                                        } else if (opt.id === userAnswer && !isCorrect) {
+                                                            optClass += "bg-rose-50 border-rose-300 text-rose-900 font-semibold";
+                                                        } else {
+                                                            optClass += "bg-slate-50 border-slate-200 text-slate-600";
+                                                        }
+                                                        return (
+                                                            <div key={opt.id} className={optClass}>
+                                                                <span className="w-6 font-bold mr-2">{opt.id})</span>
+                                                                <span>{opt.text}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <div className="p-4 bg-slate-100 rounded-lg text-sm text-slate-700">
+                                                    <strong className="text-slate-900 block mb-1">Explicação Oficial:</strong>
+                                                    {q.explanation}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Top Header Bar */}
+                    <header className="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+                        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center space-x-3">
+                                <div className="bg-orange-500 text-white p-2 rounded-lg font-bold text-xl leading-none">
+                                    AWS
+                                </div>
+                                <div>
+                                    <h1 className="text-base font-bold leading-tight">Simulado Oficial AIF-C01</h1>
+                                    <p className="text-xs text-slate-400">AWS Certified AI Practitioner - 65 Questoes</p>
+                                </div>
+                            </div>
+
+                            {/* Controles do Header */}
+                            <div className="flex items-center space-x-4">
+                                {examMode && (
+                                    <div className="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-amber-400 font-mono text-sm">
+                                        <i className="fas fa-clock"></i>
+                                        <span>{formatTime(timeLeft)}</span>
+                                    </div>
+                                )}
+
+                                <button 
+                                    onClick={finishExam}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition shadow"
+                                >
+                                    Finalizar e Ver Nota
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Sub-Header de Filtros e Progresso */}
+                    <div className="bg-white border-b border-slate-200 px-4 py-3">
+                        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-sm">
+                            {/* Filtro por Domínio */}
+                            <div className="flex items-center space-x-2 overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                                <span className="text-slate-500 text-xs font-bold uppercase whitespace-nowrap">Filtrar:</span>
+                                <button 
+                                    onClick={() => { setDomainFilter("Todos"); setCurrentIdx(0); }}
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${domainFilter === "Todos" ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                >
+                                    Todos (65)
+                                </button>
+                                <button 
+                                    onClick={() => { setDomainFilter("FocusAmazonQ"); setCurrentIdx(0); }}
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${domainFilter === "FocusAmazonQ" ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}
+                                >
+                                    <i className="fas fa-bullseye mr-1"></i> Foco: Amazon Q & VPC Redes
+                                </button>
+                                <button 
+                                    onClick={() => { setDomainFilter("Domínio 3"); setCurrentIdx(0); }}
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${domainFilter === "Domínio 3" ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                >
+                                    Domínio 3 (28%)
+                                </button>
+                                <button 
+                                    onClick={() => { setDomainFilter("Domínio 5"); setCurrentIdx(0); }}
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition ${domainFilter === "Domínio 5" ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                >
+                                    Domínio 5 (14%)
+                                </button>
+                            </div>
+
+                            {/* Contador de Respondidas */}
+                            <div className="text-xs font-semibold text-slate-500">
+                                Respondidas: <span className="text-slate-900 font-bold">{answers.filter(a => a !== null).length}</span> de 65
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Conteúdo Principal */}
+                    <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        
+                        {/* Coluna Esquerda: Cartão da Pergunta (3 colunas em tela grande) */}
+                        <div className="lg:col-span-3 space-y-6">
+                            
+                            {/* Barra de Progresso Superior */}
+                            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                                <div 
+                                    className="bg-orange-500 h-2 transition-all duration-300"
+                                    style={{ width: `${((currentIdx + 1) / filteredQuestions.length) * 100}%` }}
+                                ></div>
+                            </div>
+
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                                {/* Header da Questão */}
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-4 border-b border-slate-100">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="bg-slate-900 text-white text-xs px-3 py-1 rounded-full font-bold">
+                                            Questão {currentIdx + 1} de {filteredQuestions.length}
+                                        </span>
+                                        <span className="bg-orange-100 text-orange-800 text-xs px-3 py-1 rounded-full font-semibold">
+                                            {currentQuestion.domain}
+                                        </span>
+                                    </div>
+
+                                    <button 
+                                        onClick={() => toggleFlag(realQuestionIndex)}
+                                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition flex items-center ${flagged[realQuestionIndex] ? 'bg-amber-100 border-amber-300 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}`}
+                                    >
+                                        <i className={`fas fa-flag mr-1.5 ${flagged[realQuestionIndex] ? 'text-amber-600' : ''}`}></i>
+                                        {flagged[realQuestionIndex] ? 'Marcada para Revisar' : 'Marcar para Revisar'}
+                                    </button>
+                                </div>
+
+                                {/* Texto da Questão */}
+                                <h2 className="text-lg sm:text-xl font-semibold text-slate-800 mb-6 leading-relaxed">
+                                    {currentQuestion.question}
+                                </h2>
+
+                                {/* Opções de Resposta */}
+                                <div className="space-y-3 mb-8">
+                                    {currentQuestion.options.map((opt) => {
+                                        const isSelected = answers[realQuestionIndex] === opt.id;
+                                        const isRevealed = showExplanation[realQuestionIndex];
+                                        const isCorrectOpt = opt.id === currentQuestion.correctOption;
+
+                                        let styleClass = "option-hover p-4 border rounded-xl cursor-pointer transition flex items-start ";
+                                        if (isRevealed) {
+                                            if (isCorrectOpt) styleClass += "correct-option";
+                                            else if (isSelected) styleClass += "incorrect-option";
+                                            else styleClass += "border-slate-200 opacity-60";
+                                        } else if (isSelected) {
+                                            styleClass += "selected-option";
+                                        } else {
+                                            styleClass += "border-slate-200 bg-white";
+                                        }
+
+                                        return (
+                                            <div 
+                                                key={opt.id}
+                                                onClick={() => handleSelectOption(opt.id)}
+                                                className={styleClass}
+                                            >
+                                                <div className={`w-7 h-7 rounded-lg border flex items-center justify-center mr-3 mt-0.5 text-sm font-bold shrink-0 transition ${isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 text-slate-500 bg-slate-50'}`}>
+                                                    {opt.id}
+                                                </div>
+                                                <p className="text-slate-700 text-sm sm:text-base leading-snug pt-0.5">{opt.text}</p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Caixa de Explicação (Disponível no Modo Prática / Revelar) */}
+                                {showExplanation[realQuestionIndex] && (
+                                    <div className="p-5 bg-slate-50 border-l-4 border-blue-600 rounded-r-xl mb-8 text-sm">
+                                        <h4 className="font-bold text-blue-900 mb-2 flex items-center">
+                                            <i className="fas fa-info-circle mr-2"></i> Explicação Detalhada de Arquitetura:
+                                        </h4>
+                                        <p className="text-slate-700 leading-relaxed italic">
+                                            {currentQuestion.explanation}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Botões de Navegação */}
+                                <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                                    <button 
+                                        onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
+                                        disabled={currentIdx === 0}
+                                        className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-50 disabled:opacity-40 text-sm flex items-center"
+                                    >
+                                        <i className="fas fa-chevron-left mr-2"></i> Anterior
+                                    </button>
+
+                                    <button 
+                                        onClick={() => toggleExplanation(realQuestionIndex)}
+                                        className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition"
+                                    >
+                                        {showExplanation[realQuestionIndex] ? 'Ocultar Explicação' : 'Ver Explicação'}
+                                    </button>
+
+                                    <button 
+                                        onClick={() => setCurrentIdx(prev => Math.min(filteredQuestions.length - 1, prev + 1))}
+                                        disabled={currentIdx === filteredQuestions.length - 1}
+                                        className="px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold disabled:opacity-40 text-sm transition flex items-center"
+                                    >
+                                        Próxima <i className="fas fa-chevron-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Coluna Direita: Matriz de Questões / Paleta de Navegação Rápida */}
+                        <div className="lg:col-span-1 space-y-4">
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sticky top-20">
+                                <h3 className="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
+                                    <span>Navegador de Questões</span>
+                                    <span className="text-xs text-slate-400 font-normal">{filteredQuestions.length} itens</span>
+                                </h3>
+
+                                <div className="grid grid-cols-5 gap-2 max-h-96 overflow-y-auto custom-scrollbar p-1">
+                                    {filteredQuestions.map((q, idx) => {
+                                        const origIdx = questionsData.findIndex(item => item.id === q.id);
+                                        const isAnswered = answers[origIdx] !== null;
+                                        const isFlagged = flagged[origIdx];
+                                        const isCurrent = idx === currentIdx;
+
+                                        let btnClass = "h-9 w-full rounded-lg font-bold text-xs flex items-center justify-center transition border relative ";
+                                        if (isCurrent) {
+                                            btnClass += "ring-2 ring-orange-500 ring-offset-1 font-extrabold ";
+                                        }
+                                        
+                                        if (isAnswered) {
+                                            btnClass += "bg-blue-600 border-blue-600 text-white";
+                                        } else {
+                                            btnClass += "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100";
+                                        }
+
+                                        return (
+                                            <button 
+                                                key={q.id}
+                                                onClick={() => setCurrentIdx(idx)}
+                                                className={btnClass}
+                                            >
+                                                {q.id}
+                                                {isFlagged && (
+                                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 border border-white rounded-full"></span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Legenda */}
+                                <div className="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
+                                    <div className="flex items-center">
+                                        <span className="w-3 h-3 bg-blue-600 rounded mr-2"></span>
+                                        <span>Respondida</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <span className="w-3 h-3 bg-slate-100 border border-slate-300 rounded mr-2"></span>
+                                        <span>Não respondida</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <span className="w-2.5 h-2.5 bg-amber-400 rounded-full mr-2"></span>
+                                        <span>Marcada para revisar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </main>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
